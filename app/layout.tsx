@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata = {
   title: "広告管理ダッシュボード",
   description: "広告代理店向けの管理ダッシュボード",
-    generator: 'v0.dev'
+  generator: "v0.dev",
 }
 
 export default function RootLayout({
