@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { Bell, Search, User } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Bell, Search, User, ChevronDown, Check } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,16 +9,67 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { useAccountStore } from "@/lib/store/account-store"
+import { cn } from "@/lib/utils"
+
+// サンプルデータ - 実際の実装ではAPIから取得
+const adAccounts = [
+  { id: "acc001", name: "Meta広告アカウント", platform: "Meta" },
+  { id: "acc002", name: "Google広告アカウント", platform: "Google" },
+  { id: "acc003", name: "Yahoo!広告アカウント", platform: "Yahoo" },
+  { id: "acc004", name: "Twitter広告アカウント", platform: "Twitter" },
+  { id: "acc005", name: "TikTok広告アカウント", platform: "TikTok" },
+]
 
 export default function Header() {
   const [searchQuery, setSearchQuery] = useState("")
+  const { selectedAccounts, toggleAccount } = useAccountStore()
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+
+  // 実際の実装ではAPIからアカウント情報を取得
+  useEffect(() => {
+    // アカウント情報の初期化（実際の実装ではAPIから取得）
+    if (selectedAccounts.length === 0) {
+      toggleAccount(adAccounts[0].id) // デフォルトで最初のアカウントを選択
+    }
+  }, [selectedAccounts.length, toggleAccount])
+
+  const getSelectedAccountsText = () => {
+    if (selectedAccounts.length === 0) {
+      return "アカウントを選択"
+    } else if (selectedAccounts.length === 1) {
+      const account = adAccounts.find((acc) => acc.id === selectedAccounts[0])
+      return account ? account.name : "アカウントを選択"
+    } else {
+      return `${selectedAccounts.length}個のアカウントを選択中`
+    }
+  }
+
+  const getPlatformColor = (platform: string) => {
+    switch (platform) {
+      case "Meta":
+        return "bg-blue-100 text-blue-800"
+      case "Google":
+        return "bg-red-100 text-red-800"
+      case "Yahoo":
+        return "bg-purple-100 text-purple-800"
+      case "Twitter":
+        return "bg-sky-100 text-sky-800"
+      case "TikTok":
+        return "bg-gray-100 text-gray-800"
+      default:
+        return "bg-gray-100 text-gray-800"
+    }
+  }
 
   return (
     <header className="bg-white shadow-sm z-10">
       <div className="flex items-center justify-between px-6 py-3">
-        <div className="flex items-center w-1/3">
+        <div className="flex items-center space-x-4 w-2/3">
           <div className="relative w-full max-w-md">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <Search className="h-4 w-4 text-gray-400" />
@@ -31,6 +82,33 @@ export default function Header() {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
+
+          <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="flex items-center justify-between min-w-[240px]">
+                <span className="truncate">{getSelectedAccountsText()}</span>
+                <ChevronDown className="h-4 w-4 ml-2 opacity-50" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-[240px]">
+              <DropdownMenuLabel>広告アカウント選択</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {adAccounts.map((account) => (
+                <DropdownMenuCheckboxItem
+                  key={account.id}
+                  checked={selectedAccounts.includes(account.id)}
+                  onCheckedChange={() => toggleAccount(account.id)}
+                  className="flex items-center justify-between"
+                >
+                  <div className="flex items-center space-x-2">
+                    <span>{account.name}</span>
+                    <Badge className={cn("text-xs", getPlatformColor(account.platform))}>{account.platform}</Badge>
+                  </div>
+                  {selectedAccounts.includes(account.id) && <Check className="h-4 w-4 ml-2" />}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <div className="flex items-center space-x-4">
