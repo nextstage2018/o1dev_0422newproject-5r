@@ -19,7 +19,8 @@ export default function Sidebar() {
     { name: "広告セット", href: "/adsets", icon: Layers },
     { name: "広告", href: "/ads", icon: FileText },
     { name: "タスク", href: "/tasks", icon: CheckSquare },
-    { name: "検証設計", href: "/tests", icon: Settings },
+    { name: "検証設計", href: "/tests", icon: CheckSquare },
+    { name: "設定", href: "/settings", icon: Settings },
   ]
 
   return (
