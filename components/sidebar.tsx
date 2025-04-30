@@ -1,81 +1,190 @@
 "use client"
 
+import type React from "react"
+
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
-  Users,
-  Briefcase,
-  BarChart2,
-  Layers,
+  BarChart3,
   FileText,
-  CheckSquare,
-  Settings,
-  LogOut,
   Home,
-  TestTube,
+  Layers,
+  LayoutGrid,
+  Settings,
+  Users,
+  ImageIcon,
+  Megaphone,
+  Target,
+  CheckSquare,
+  Building2,
 } from "lucide-react"
-import { UserCog } from "lucide-react"
-import { useAuth } from "@/lib/auth/auth-context"
 
-export default function Sidebar() {
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+
+export default function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const pathname = usePathname()
-  const { logout } = useAuth()
-
-  const isActive = (path: string) => {
-    return pathname === path || pathname?.startsWith(`${path}/`)
-  }
-
-  const handleLogout = async () => {
-    try {
-      await logout()
-    } catch (error) {
-      console.error("ログアウトに失敗しました:", error)
-    }
-  }
-
-  const navItems = [
-    { name: "ダッシュボード", href: "/", icon: Home },
-    { name: "クライアント", href: "/clients", icon: Users },
-    { name: "プロジェクト", href: "/projects", icon: Briefcase },
-    { name: "キャンペーン", href: "/campaigns", icon: BarChart2 },
-    { name: "広告セット", href: "/adsets", icon: Layers },
-    { name: "広告", href: "/ads", icon: FileText },
-    { name: "タスク", href: "/tasks", icon: CheckSquare },
-    { name: "検証設計", href: "/tests", icon: TestTube },
-    { name: "ユーザー", href: "/users", icon: UserCog },
-    { name: "設定", href: "/settings", icon: Settings },
-  ]
 
   return (
-    <div className="bg-white w-64 shadow-md flex flex-col">
-      <div className="p-4 border-b">
-        <h1 className="text-xl font-bold text-gray-800">広告管理システム</h1>
-      </div>
-      <nav className="flex-1 overflow-y-auto py-4">
-        <ul className="space-y-1">
-          {navItems.map((item) => {
-            const Icon = item.icon
-            return (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className={`flex items-center px-4 py-3 text-sm ${
-                    isActive(item.href) ? "bg-gray-100 text-blue-600 font-medium" : "text-gray-700 hover:bg-gray-50"
-                  }`}
-                >
-                  <Icon className="h-5 w-5 mr-3" />
-                  {item.name}
-                </Link>
-              </li>
-            )
-          })}
-        </ul>
-      </nav>
-      <div className="p-4 border-t">
-        <button className="flex items-center text-sm text-gray-700 hover:text-gray-900 w-full" onClick={handleLogout}>
-          <LogOut className="h-5 w-5 mr-3" />
-          ログアウト
-        </button>
+    <div className={cn("w-56 bg-white shadow-sm", className)}>
+      <div className="space-y-2 py-4">
+        <div className="px-3 py-1">
+          <h2 className="mb-1 px-4 text-sm font-semibold tracking-tight">ダッシュボード</h2>
+          <div className="space-y-1">
+            <Button variant={pathname === "/" ? "secondary" : "ghost"} className="w-full justify-start" asChild>
+              <Link href="/">
+                <Home className="mr-2 h-4 w-4" />
+                ホーム
+              </Link>
+            </Button>
+            <Button
+              variant={pathname === "/analytics" ? "secondary" : "ghost"}
+              className="w-full justify-start"
+              asChild
+            >
+              <Link href="/analytics">
+                <BarChart3 className="mr-2 h-4 w-4" />
+                分析
+              </Link>
+            </Button>
+          </div>
+        </div>
+        <div className="px-3 py-1">
+          <h2 className="mb-1 px-4 text-sm font-semibold tracking-tight">プロジェクト管理</h2>
+          <div className="space-y-1">
+            <Button
+              variant={pathname === "/clients" || pathname?.startsWith("/clients/") ? "secondary" : "ghost"}
+              className="w-full justify-start"
+              asChild
+            >
+              <Link href="/clients">
+                <Building2 className="mr-2 h-4 w-4" />
+                クライアント
+              </Link>
+            </Button>
+            <Button
+              variant={pathname === "/projects" || pathname?.startsWith("/projects/") ? "secondary" : "ghost"}
+              className="w-full justify-start"
+              asChild
+            >
+              <Link href="/projects">
+                <Layers className="mr-2 h-4 w-4" />
+                プロジェクト
+              </Link>
+            </Button>
+            <Button
+              variant={pathname === "/tasks" || pathname?.startsWith("/tasks/") ? "secondary" : "ghost"}
+              className="w-full justify-start"
+              asChild
+            >
+              <Link href="/tasks">
+                <CheckSquare className="mr-2 h-4 w-4" />
+                タスク
+              </Link>
+            </Button>
+          </div>
+        </div>
+        <div className="px-3 py-1">
+          <h2 className="mb-1 px-4 text-sm font-semibold tracking-tight">広告管理</h2>
+          <div className="space-y-1">
+            <Button
+              variant={pathname === "/campaigns" || pathname?.startsWith("/campaigns/") ? "secondary" : "ghost"}
+              className="w-full justify-start"
+              asChild
+            >
+              <Link href="/campaigns">
+                <Megaphone className="mr-2 h-4 w-4" />
+                キャンペーン
+              </Link>
+            </Button>
+            <Button
+              variant={pathname === "/adsets" || pathname?.startsWith("/adsets/") ? "secondary" : "ghost"}
+              className="w-full justify-start"
+              asChild
+            >
+              <Link href="/adsets">
+                <Target className="mr-2 h-4 w-4" />
+                広告セット
+              </Link>
+            </Button>
+            <Button
+              variant={pathname === "/ads" || pathname?.startsWith("/ads/") ? "secondary" : "ghost"}
+              className="w-full justify-start"
+              asChild
+            >
+              <Link href="/ads">
+                <FileText className="mr-2 h-4 w-4" />
+                広告
+              </Link>
+            </Button>
+            <Button
+              variant={pathname === "/creatives" || pathname?.startsWith("/creatives/") ? "secondary" : "ghost"}
+              className="w-full justify-start"
+              asChild
+            >
+              <Link href="/creatives">
+                <ImageIcon className="mr-2 h-4 w-4" />
+                クリエイティブ
+              </Link>
+            </Button>
+          </div>
+        </div>
+        <div className="px-3 py-1">
+          <h2 className="mb-1 px-4 text-sm font-semibold tracking-tight">テスト</h2>
+          <div className="space-y-1">
+            <Button variant={pathname === "/tests" ? "secondary" : "ghost"} className="w-full justify-start" asChild>
+              <Link href="/tests">
+                <LayoutGrid className="mr-2 h-4 w-4" />
+                テスト一覧
+              </Link>
+            </Button>
+            <Button
+              variant={pathname === "/tests/creative" ? "secondary" : "ghost"}
+              className="w-full justify-start"
+              asChild
+            >
+              <Link href="/tests/creative">
+                <ImageIcon className="mr-2 h-4 w-4" />
+                クリエイティブテスト
+              </Link>
+            </Button>
+            <Button
+              variant={pathname === "/tests/landing" ? "secondary" : "ghost"}
+              className="w-full justify-start"
+              asChild
+            >
+              <Link href="/tests/landing">
+                <FileText className="mr-2 h-4 w-4" />
+                ランディングページテスト
+              </Link>
+            </Button>
+          </div>
+        </div>
+        <div className="px-3 py-1">
+          <h2 className="mb-1 px-4 text-sm font-semibold tracking-tight">管理</h2>
+          <div className="space-y-1">
+            <Button
+              variant={pathname === "/users" || pathname?.startsWith("/users/") ? "secondary" : "ghost"}
+              className="w-full justify-start"
+              asChild
+            >
+              <Link href="/users">
+                <Users className="mr-2 h-4 w-4" />
+                ユーザー
+              </Link>
+            </Button>
+            <Button
+              variant={pathname === "/settings" || pathname?.startsWith("/settings/") ? "secondary" : "ghost"}
+              className="w-full justify-start"
+              asChild
+            >
+              <Link href="/settings">
+                <Settings className="mr-2 h-4 w-4" />
+                設定
+              </Link>
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   )
