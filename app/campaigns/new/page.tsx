@@ -9,38 +9,59 @@ import { DynamicForm } from "@/components/dynamic-form"
 import { ArrowLeft, Plus } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 
-// プロジェクトフィールドの定義
-const projectFields = [
+// キャンペーンフィールドの定義
+const campaignFields = [
   {
-    id: "project_id",
-    name: "プロジェクトID",
+    id: "campaign_id",
+    name: "キャンペーンID",
     type: "string",
     required: true,
     visible: true,
-    table: "dim_project",
+    table: "dim_campaign",
   },
   {
-    id: "client_id",
-    name: "クライアント",
+    id: "project_id",
+    name: "プロジェクト",
     type: "string",
     required: true,
     visible: true,
-    table: "dim_project",
+    table: "dim_campaign",
     options: [
-      { value: "cl00001", label: "株式会社ABC" },
-      { value: "cl00002", label: "DEF株式会社" },
-      { value: "cl00003", label: "GHI工業" },
-      { value: "cl00004", label: "JKLサービス" },
-      { value: "cl00005", label: "MNO商事" },
+      { value: "pr00001", label: "株式会社ABC 夏季プロモーション" },
+      { value: "pr00002", label: "DEF株式会社 年末プロモーション" },
+      { value: "pr00003", label: "GHI工業 ブランディング" },
+      { value: "pr00004", label: "JKLサービス 顧客獲得" },
+      { value: "pr00005", label: "MNO商事 認知拡大" },
     ],
   },
   {
-    id: "project_name",
-    name: "プロジェクト名",
+    id: "campaign_name",
+    name: "キャンペーン名",
     type: "string",
     required: true,
     visible: true,
-    table: "dim_project",
+    table: "dim_campaign",
+  },
+  {
+    id: "objective",
+    name: "広告目的",
+    type: "string",
+    required: true,
+    visible: true,
+    table: "dim_campaign",
+    options: [
+      { value: "認知拡大", label: "認知拡大" },
+      { value: "リーチ", label: "リーチ" },
+      { value: "トラフィック", label: "トラフィック" },
+      { value: "エンゲージメント", label: "エンゲージメント" },
+      { value: "アプリインストール", label: "アプリインストール" },
+      { value: "動画再生", label: "動画再生" },
+      { value: "リード獲得", label: "リード獲得" },
+      { value: "メッセージ", label: "メッセージ" },
+      { value: "コンバージョン", label: "コンバージョン" },
+      { value: "カタログ販売", label: "カタログ販売" },
+      { value: "来店", label: "来店" },
+    ],
   },
   {
     id: "start_date",
@@ -48,7 +69,7 @@ const projectFields = [
     type: "date",
     required: true,
     visible: true,
-    table: "dim_project",
+    table: "dim_campaign",
   },
   {
     id: "end_date",
@@ -56,52 +77,23 @@ const projectFields = [
     type: "date",
     required: false,
     visible: true,
-    table: "dim_project",
+    table: "dim_campaign",
   },
   {
-    id: "budget",
-    name: "予算",
+    id: "budget_total",
+    name: "総予算",
+    type: "integer",
+    required: false,
+    visible: true,
+    table: "dim_campaign",
+  },
+  {
+    id: "budget_daily",
+    name: "日予算",
     type: "integer",
     required: true,
     visible: true,
-    table: "dim_project",
-  },
-  {
-    id: "adaccount_id",
-    name: "広告アカウントID",
-    type: "string",
-    required: true,
-    visible: true,
-    table: "dim_project",
-    options: [
-      { value: "acc001", label: "Meta広告アカウント" },
-      { value: "acc002", label: "Google広告アカウント" },
-      { value: "acc003", label: "Yahoo!広告アカウント" },
-      { value: "acc004", label: "Twitter広告アカウント" },
-      { value: "acc005", label: "TikTok広告アカウント" },
-    ],
-  },
-  {
-    id: "commission_type",
-    name: "報酬形態",
-    type: "string",
-    required: true,
-    visible: true,
-    table: "dim_project",
-    options: [
-      { value: "fee", label: "変動手数料" },
-      { value: "fixed", label: "固定報酬" },
-      { value: "hybrid", label: "ハイブリッド" },
-      { value: "revshare", label: "成果報酬" },
-    ],
-  },
-  {
-    id: "commission_feerate",
-    name: "手数料率(%)",
-    type: "float",
-    required: false,
-    visible: true,
-    table: "dim_project",
+    table: "dim_campaign",
   },
   {
     id: "status",
@@ -109,44 +101,44 @@ const projectFields = [
     type: "string",
     required: true,
     visible: true,
-    table: "dim_project",
+    table: "dim_campaign",
     options: [
-      { value: "active", label: "進行中" },
-      { value: "draft", label: "準備中" },
-      { value: "planning", label: "計画中" },
-      { value: "completed", label: "完了" },
+      { value: "active", label: "配信中" },
+      { value: "paused", label: "停止中" },
+      { value: "draft", label: "下書き" },
+      { value: "archived", label: "アーカイブ" },
     ],
   },
   {
     id: "description",
-    name: "プロジェクト説明",
+    name: "キャンペーン説明",
     type: "string",
     required: false,
     visible: true,
-    table: "dim_project",
+    table: "dim_campaign",
   },
 ]
 
-export default function NewProjectPage() {
+export default function NewCampaignPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const clientId = searchParams.get("client_id")
+  const projectId = searchParams.get("project_id")
 
   const [isLoading, setIsLoading] = useState(true)
-  const [fields, setFields] = useState(projectFields)
+  const [fields, setFields] = useState(campaignFields)
   const [initialValues, setInitialValues] = useState<Record<string, any>>({})
 
   // 実際の実装では、APIからフィールド設定を取得
   useEffect(() => {
     // フィールド設定をAPIから取得する処理
-    // 例: fetch('/api/settings/project-fields')
+    // 例: fetch('/api/settings/campaign-fields')
     //     .then(res => res.json())
     //     .then(data => setFields(data))
 
-    // URLパラメータからクライアントIDが渡された場合、初期値として設定
-    if (clientId) {
+    // URLパラメータからプロジェクトIDが渡された場合、初期値として設定
+    if (projectId) {
       setInitialValues({
-        client_id: clientId,
+        project_id: projectId,
         // 現在の日付を開始日の初期値として設定
         start_date: new Date().toISOString().split("T")[0],
         status: "draft",
@@ -161,10 +153,10 @@ export default function NewProjectPage() {
 
     // ここではモックデータを使用
     setTimeout(() => {
-      setFields(projectFields)
+      setFields(campaignFields)
       setIsLoading(false)
     }, 500)
-  }, [clientId])
+  }, [projectId])
 
   const handleSubmit = async (values: Record<string, any>) => {
     setIsLoading(true)
@@ -174,19 +166,19 @@ export default function NewProjectPage() {
 
       // 成功メッセージを表示
       toast({
-        title: "プロジェクトを登録しました",
-        description: `${values.project_name}を登録しました`,
+        title: "キャンペーンを登録しました",
+        description: `${values.campaign_name}を登録しました`,
       })
 
-      // 送信完了後、プロジェクト一覧ページに戻る
+      // 送信完了後、キャンペーン一覧ページに戻る
       setTimeout(() => {
-        router.push("/projects")
+        router.push("/campaigns")
       }, 1000)
     } catch (error) {
       console.error("登録エラー:", error)
       toast({
         title: "エラーが発生しました",
-        description: "プロジェクトの登録に失敗しました。もう一度お試しください。",
+        description: "キャンペーンの登録に失敗しました。もう一度お試しください。",
         variant: "destructive",
       })
       setIsLoading(false)
@@ -197,12 +189,12 @@ export default function NewProjectPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <Link href="/projects">
+          <Link href="/campaigns">
             <Button variant="outline" size="icon">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
-          <h1 className="text-2xl font-bold tracking-tight">新規プロジェクト登録</h1>
+          <h1 className="text-2xl font-bold tracking-tight">新規キャンペーン登録</h1>
         </div>
       </div>
 
@@ -210,9 +202,9 @@ export default function NewProjectPage() {
         <CardHeader className="bg-gray-50">
           <div className="flex items-center space-x-2">
             <Plus className="h-5 w-5 text-gray-500" />
-            <CardTitle>新規プロジェクト情報</CardTitle>
+            <CardTitle>新規キャンペーン情報</CardTitle>
           </div>
-          <CardDescription>新しいプロジェクトの情報を入力してください。</CardDescription>
+          <CardDescription>新しいキャンペーンの情報を入力してください。</CardDescription>
         </CardHeader>
         <CardContent className="pt-6">
           {isLoading ? (
@@ -226,7 +218,7 @@ export default function NewProjectPage() {
               onSubmit={handleSubmit}
               submitLabel="登録する"
               cancelLabel="キャンセル"
-              onCancel={() => router.push("/projects")}
+              onCancel={() => router.push("/campaigns")}
             />
           )}
         </CardContent>

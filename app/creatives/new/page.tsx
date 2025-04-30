@@ -9,109 +9,119 @@ import { DynamicForm } from "@/components/dynamic-form"
 import { ArrowLeft, Plus } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 
-// クライアントフィールドの定義
-const clientFields = [
+// クリエイティブフィールドの定義
+const creativeFields = [
   {
-    id: "client_id",
-    name: "会社ID",
+    id: "creative_id",
+    name: "クリエイティブID",
     type: "string",
     required: true,
     visible: true,
-    table: "dim_client",
+    table: "dim_creative",
   },
   {
-    id: "client_name",
-    name: "会社名",
+    id: "creative_name",
+    name: "クリエイティブ名",
     type: "string",
     required: true,
     visible: true,
-    table: "dim_client",
+    table: "dim_creative",
   },
   {
-    id: "industry",
-    name: "業種",
+    id: "creative_type",
+    name: "クリエイティブ形式",
     type: "string",
     required: true,
     visible: true,
-    table: "dim_client",
+    table: "dim_creative",
     options: [
-      { value: "小売", label: "小売" },
-      { value: "IT", label: "IT" },
-      { value: "製造", label: "製造" },
-      { value: "サービス", label: "サービス" },
-      { value: "商社", label: "商社" },
-      { value: "金融", label: "金融" },
-      { value: "不動産", label: "不動産" },
-      { value: "その他", label: "その他" },
+      { value: "image", label: "画像" },
+      { value: "video", label: "動画" },
+      { value: "carousel", label: "カルーセル" },
+      { value: "collection", label: "コレクション" },
+      { value: "slideshow", label: "スライドショー" },
     ],
   },
   {
-    id: "contact",
-    name: "担当者名",
+    id: "folder_id",
+    name: "フォルダ",
     type: "string",
     required: true,
     visible: true,
-    table: "dim_client",
+    table: "dim_creative",
+    options: [
+      { value: "fd00001", label: "夏季キャンペーン素材" },
+      { value: "fd00002", label: "新商品発表素材" },
+      { value: "fd00003", label: "ブランドリニューアル素材" },
+      { value: "fd00004", label: "年末セール素材" },
+    ],
   },
   {
-    id: "email",
-    name: "メールアドレス",
+    id: "media_id",
+    name: "メディアID",
     type: "string",
     required: true,
     visible: true,
-    table: "dim_client",
+    table: "dim_creative",
   },
   {
-    id: "phone",
-    name: "電話番号",
+    id: "media_url",
+    name: "メディアURL",
     type: "string",
     required: true,
     visible: true,
-    table: "dim_client",
+    table: "dim_creative",
   },
   {
-    id: "address",
-    name: "住所",
+    id: "headline",
+    name: "見出し",
+    type: "string",
+    required: true,
+    visible: true,
+    table: "dim_creative",
+  },
+  {
+    id: "body_text",
+    name: "本文",
+    type: "string",
+    required: true,
+    visible: true,
+    table: "dim_creative",
+  },
+  {
+    id: "description",
+    name: "クリエイティブ説明",
     type: "string",
     required: false,
     visible: true,
-    table: "dim_client",
-  },
-  {
-    id: "delivery_status",
-    name: "配信ステータス",
-    type: "string",
-    required: true,
-    visible: true,
-    table: "dim_client",
-    options: [
-      { value: "active", label: "配信中" },
-      { value: "paused", label: "停止" },
-      { value: "archived", label: "アーカイブ" },
-      { value: "draft", label: "下書き" },
-      { value: "test", label: "テスト" },
-    ],
+    table: "dim_creative",
   },
 ]
 
-export default function NewClientPage() {
+export default function NewCreativePage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
-  const [fields, setFields] = useState(clientFields)
-  const [initialValues, setInitialValues] = useState<Record<string, any>>({
-    delivery_status: "draft", // デフォルト値を設定
-  })
+  const [fields, setFields] = useState(creativeFields)
+  const [initialValues, setInitialValues] = useState<Record<string, any>>({})
 
   // 実際の実装では、APIからフィールド設定を取得
   useEffect(() => {
     // フィールド設定をAPIから取得する処理
-    // 例: fetch('/api/settings/client-fields')
+    // 例: fetch('/api/settings/creative-fields')
     //     .then(res => res.json())
     //     .then(data => setFields(data))
 
+    // 初期値を設定
+    setInitialValues({
+      creative_type: "image",
+      media_url: "https://via.placeholder.com/800x600?text=New+Creative",
+      headline: "新しいクリエイティブ",
+      body_text: "ここに本文を入力してください",
+    })
+
     // ここではモックデータを使用
     setTimeout(() => {
-      setFields(clientFields)
+      setFields(creativeFields)
       setIsLoading(false)
     }, 500)
   }, [])
@@ -124,19 +134,19 @@ export default function NewClientPage() {
 
       // 成功メッセージを表示
       toast({
-        title: "クライアントを登録しました",
-        description: `${values.client_name}を登録しました`,
+        title: "クリエイティブを登録しました",
+        description: `${values.creative_name}を登録しました`,
       })
 
-      // 送信完了後、クライアント一覧ページに戻る
+      // 送信完了後、クリエイティブ一覧ページに戻る
       setTimeout(() => {
-        router.push("/clients")
+        router.push("/creatives")
       }, 1000)
     } catch (error) {
       console.error("登録エラー:", error)
       toast({
         title: "エラーが発生しました",
-        description: "クライアントの登録に失敗しました。もう一度お試しください。",
+        description: "クリエイティブの登録に失敗しました。もう一度お試しください。",
         variant: "destructive",
       })
       setIsLoading(false)
@@ -147,12 +157,12 @@ export default function NewClientPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <Link href="/clients">
+          <Link href="/creatives">
             <Button variant="outline" size="icon">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
-          <h1 className="text-2xl font-bold tracking-tight">新規クライアント登録</h1>
+          <h1 className="text-2xl font-bold tracking-tight">新規クリエイティブ登録</h1>
         </div>
       </div>
 
@@ -160,9 +170,9 @@ export default function NewClientPage() {
         <CardHeader className="bg-gray-50">
           <div className="flex items-center space-x-2">
             <Plus className="h-5 w-5 text-gray-500" />
-            <CardTitle>新規クライアント情報</CardTitle>
+            <CardTitle>新規クリエイティブ情報</CardTitle>
           </div>
-          <CardDescription>新しいクライアント企業の情報を入力してください。</CardDescription>
+          <CardDescription>新しいクリエイティブの情報を入力してください。</CardDescription>
         </CardHeader>
         <CardContent className="pt-6">
           {isLoading ? (
@@ -176,7 +186,7 @@ export default function NewClientPage() {
               onSubmit={handleSubmit}
               submitLabel="登録する"
               cancelLabel="キャンセル"
-              onCancel={() => router.push("/clients")}
+              onCancel={() => router.push("/creatives")}
             />
           )}
         </CardContent>
