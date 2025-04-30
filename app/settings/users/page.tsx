@@ -34,7 +34,7 @@ import {
 // サンプルデータ - 実際の実装ではAPIから取得
 const initialUsers = [
   {
-    id: "user1",
+    id: "us00001",
     name: "山田太郎",
     email: "yamada@example.com",
     role: "admin",
@@ -42,7 +42,7 @@ const initialUsers = [
     created_at: "2023-01-15",
   },
   {
-    id: "user2",
+    id: "us00002",
     name: "佐藤花子",
     email: "sato@example.com",
     role: "operator",
@@ -50,7 +50,7 @@ const initialUsers = [
     created_at: "2023-02-20",
   },
   {
-    id: "user3",
+    id: "us00003",
     name: "鈴木一郎",
     email: "suzuki@example.com",
     role: "viewer",
@@ -196,6 +196,8 @@ export default function UsersPage() {
                     <SelectItem value="admin">管理者</SelectItem>
                     <SelectItem value="operator">運用者</SelectItem>
                     <SelectItem value="viewer">閲覧者</SelectItem>
+                    <SelectItem value="client">クライアント</SelectItem>
+                    <SelectItem value="system">システム</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -276,6 +278,8 @@ export default function UsersPage() {
                           <SelectItem value="admin">管理者</SelectItem>
                           <SelectItem value="operator">運用者</SelectItem>
                           <SelectItem value="viewer">閲覧者</SelectItem>
+                          <SelectItem value="client">クライアント</SelectItem>
+                          <SelectItem value="system">システム</SelectItem>
                         </SelectContent>
                       </Select>
                     ) : (
@@ -285,10 +289,22 @@ export default function UsersPage() {
                             ? "bg-blue-100 text-blue-800"
                             : user.role === "operator"
                               ? "bg-green-100 text-green-800"
-                              : "bg-gray-100 text-gray-800"
+                              : user.role === "client"
+                                ? "bg-purple-100 text-purple-800"
+                                : user.role === "system"
+                                  ? "bg-gray-100 text-gray-800"
+                                  : "bg-gray-100 text-gray-800"
                         }`}
                       >
-                        {user.role === "admin" ? "管理者" : user.role === "operator" ? "運用者" : "閲覧者"}
+                        {user.role === "admin"
+                          ? "管理者"
+                          : user.role === "operator"
+                            ? "運用者"
+                            : user.role === "viewer"
+                              ? "閲覧者"
+                              : user.role === "client"
+                                ? "クライアント"
+                                : "システム"}
                       </span>
                     )}
                   </TableCell>

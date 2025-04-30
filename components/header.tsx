@@ -18,28 +18,34 @@ import { cn } from "@/lib/utils"
 
 // サンプルデータ - 実際の実装ではAPIから取得
 const adAccounts = [
-  { id: "acc001", name: "Meta広告アカウント", platform: "Meta" },
-  { id: "acc002", name: "Google広告アカウント", platform: "Google" },
-  { id: "acc003", name: "Yahoo!広告アカウント", platform: "Yahoo" },
-  { id: "acc004", name: "Twitter広告アカウント", platform: "Twitter" },
-  { id: "acc005", name: "TikTok広告アカウント", platform: "TikTok" },
+  { id: "acc001", name: "Meta広告アカウント", platform: "Meta", project_id: "pr00001" },
+  { id: "acc002", name: "Google広告アカウント", platform: "Google", project_id: "pr00002" },
+  { id: "acc003", name: "Yahoo!広告アカウント", platform: "Yahoo", project_id: "pr00003" },
+  { id: "acc004", name: "Twitter広告アカウント", platform: "Twitter", project_id: "pr00004" },
+  { id: "acc005", name: "TikTok広告アカウント", platform: "TikTok", project_id: "pr00005" },
 ]
 
 export default function Header() {
   const [searchQuery, setSearchQuery] = useState("")
   const { selectedAccounts, toggleAccount } = useAccountStore()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
+
+  // クライアントサイドでのみ実行されるようにする
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // 実際の実装ではAPIからアカウント情報を取得
   useEffect(() => {
     // アカウント情報の初期化（実際の実装ではAPIから取得）
-    if (selectedAccounts.length === 0) {
+    if (isMounted && selectedAccounts.length === 0) {
       toggleAccount(adAccounts[0].id) // デフォルトで最初のアカウントを選択
     }
-  }, [selectedAccounts.length, toggleAccount])
+  }, [isMounted, selectedAccounts.length, toggleAccount])
 
   const getSelectedAccountsText = () => {
-    if (selectedAccounts.length === 0) {
+    if (!isMounted || selectedAccounts.length === 0) {
       return "アカウントを選択"
     } else if (selectedAccounts.length === 1) {
       const account = adAccounts.find((acc) => acc.id === selectedAccounts[0])
@@ -96,7 +102,7 @@ export default function Header() {
               {adAccounts.map((account) => (
                 <DropdownMenuCheckboxItem
                   key={account.id}
-                  checked={selectedAccounts.includes(account.id)}
+                  checked={isMounted && selectedAccounts.includes(account.id)}
                   onCheckedChange={() => toggleAccount(account.id)}
                   className="flex items-center justify-between"
                 >
@@ -104,7 +110,7 @@ export default function Header() {
                     <span>{account.name}</span>
                     <Badge className={cn("text-xs", getPlatformColor(account.platform))}>{account.platform}</Badge>
                   </div>
-                  {selectedAccounts.includes(account.id) && <Check className="h-4 w-4 ml-2" />}
+                  {isMounted && selectedAccounts.includes(account.id) && <Check className="h-4 w-4 ml-2" />}
                 </DropdownMenuCheckboxItem>
               ))}
             </DropdownMenuContent>

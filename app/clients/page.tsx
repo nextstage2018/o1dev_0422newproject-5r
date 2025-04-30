@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Plus, Edit, Trash2 } from "lucide-react"
 
-// サンプルデータ
+// サンプルデータを更新
 const clients = [
   {
     id: "cl00001",
@@ -13,6 +13,7 @@ const clients = [
     contact: "田中太郎",
     email: "tanaka@abc.co.jp",
     phone: "03-1234-5678",
+    delivery_status: "active",
   },
   {
     id: "cl00002",
@@ -21,6 +22,7 @@ const clients = [
     contact: "鈴木花子",
     email: "suzuki@def.co.jp",
     phone: "03-2345-6789",
+    delivery_status: "active",
   },
   {
     id: "cl00003",
@@ -29,6 +31,7 @@ const clients = [
     contact: "佐藤次郎",
     email: "sato@ghi.co.jp",
     phone: "03-3456-7890",
+    delivery_status: "paused",
   },
   {
     id: "cl00004",
@@ -37,6 +40,7 @@ const clients = [
     contact: "山田健太",
     email: "yamada@jkl.co.jp",
     phone: "03-4567-8901",
+    delivery_status: "active",
   },
   {
     id: "cl00005",
@@ -45,6 +49,7 @@ const clients = [
     contact: "伊藤美咲",
     email: "ito@mno.co.jp",
     phone: "03-5678-9012",
+    delivery_status: "draft",
   },
 ]
 

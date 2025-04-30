@@ -1,69 +1,59 @@
 "use client"
 
-import { createContext, useContext, type ReactNode, useEffect, useState } from "react"
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
 import { useAccountStore } from "@/lib/store/account-store"
 
 // サンプルデータ - 実際の実装ではAPIから取得
 const adAccounts = [
-  { id: "acc001", name: "Meta広告アカウント", platform: "Meta" },
-  { id: "acc002", name: "Google広告アカウント", platform: "Google" },
-  { id: "acc003", name: "Yahoo!広告アカウント", platform: "Yahoo" },
-  { id: "acc004", name: "Twitter広告アカウント", platform: "Twitter" },
-  { id: "acc005", name: "TikTok広告アカウント", platform: "TikTok" },
+  { id: "acc001", name: "Meta広告アカウント", platform: "Meta", project_id: "pr00001" },
+  { id: "acc002", name: "Google広告アカウント", platform: "Google", project_id: "pr00002" },
+  { id: "acc003", name: "Yahoo!広告アカウント", platform: "Yahoo", project_id: "pr00003" },
+  { id: "acc004", name: "Twitter広告アカウント", platform: "Twitter", project_id: "pr00004" },
+  { id: "acc005", name: "TikTok広告アカウント", platform: "TikTok", project_id: "pr00005" },
 ]
 
 interface AccountContextType {
   selectedAccounts: string[]
-  selectedAccountsData: Array<{
-    id: string
-    name: string
-    platform: string
-  }>
-  isLoading: boolean
+  toggleAccount: (accountId: string) => void
+  getSelectedAccountsInfo: () => { id: string; name: string; platform: string; project_id: string }[]
+  isMounted: boolean
 }
 
-const AccountContext = createContext<AccountContextType>({
-  selectedAccounts: [],
-  selectedAccountsData: [],
-  isLoading: true,
-})
-
-export function useAccountContext() {
-  return useContext(AccountContext)
-}
+const AccountContext = createContext<AccountContextType | undefined>(undefined)
 
 export function AccountContextProvider({ children }: { children: ReactNode }) {
-  const { selectedAccounts } = useAccountStore()
-  const [isLoading, setIsLoading] = useState(true)
-  const [selectedAccountsData, setSelectedAccountsData] = useState<
-    Array<{
-      id: string
-      name: string
-      platform: string
-    }>
-  >([])
+  const { selectedAccounts, toggleAccount } = useAccountStore()
+  const [isMounted, setIsMounted] = useState(false)
 
+  // クライアントサイドでのみ実行されるようにする
   useEffect(() => {
-    // 実際の実装ではAPIからアカウント情報を取得
-    const fetchAccountData = async () => {
-      setIsLoading(true)
-      try {
-        // APIリクエストの代わりにサンプルデータをフィルタリング
-        const filteredAccounts = adAccounts.filter((account) => selectedAccounts.includes(account.id))
-        setSelectedAccountsData(filteredAccounts)
-      } catch (error) {
-        console.error("アカウント情報の取得に失敗しました", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
+    setIsMounted(true)
+  }, [])
 
-    fetchAccountData()
-  }, [selectedAccounts])
+  // 選択されたアカウントの情報を取得する関数
+  const getSelectedAccountsInfo = () => {
+    if (!isMounted) return []
+    return adAccounts.filter((account) => selectedAccounts.includes(account.id))
+  }
 
   return (
-    <AccountContext.Provider value={{ selectedAccounts, selectedAccountsData, isLoading }}>
+    <AccountContext.Provider
+      value={{
+        selectedAccounts,
+        toggleAccount,
+        getSelectedAccountsInfo,
+        isMounted,
+      }}
+    >
       {children}
     </AccountContext.Provider>
   )
+}
+
+export function useAccountContext() {
+  const context = useContext(AccountContext)
+  if (context === undefined) {
+    throw new Error("useAccountContext must be used within an AccountContextProvider")
+  }
+  return context
 }

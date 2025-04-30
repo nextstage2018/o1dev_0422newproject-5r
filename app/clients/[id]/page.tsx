@@ -15,11 +15,12 @@ const client = {
   phone: "03-1234-5678",
   address: "東京都渋谷区渋谷1-1-1",
   created_at: "2023-01-15",
+  delivery_status: "active",
 }
 
 const projects = [
-  { id: "pr00001", name: "夏季キャンペーン", start_date: "2023-06-01", end_date: "2023-08-31", status: "進行中" },
-  { id: "pr00002", name: "新商品発表", start_date: "2023-09-01", end_date: "2023-10-31", status: "準備中" },
+  { id: "pr00001", name: "夏季キャンペーン", start_date: "2023-06-01", end_date: "2023-08-31", status: "active" },
+  { id: "pr00002", name: "新商品発表", start_date: "2023-09-01", end_date: "2023-10-31", status: "draft" },
 ]
 
 export default function ClientDetailPage({ params }: { params: { id: string } }) {
@@ -123,9 +124,9 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
                         <TableCell>
                           <span
                             className={`px-2 py-1 rounded-full text-xs ${
-                              project.status === "進行中"
+                              project.status === "active"
                                 ? "bg-green-100 text-green-800"
-                                : project.status === "準備中"
+                                : project.status === "draft"
                                   ? "bg-blue-100 text-blue-800"
                                   : "bg-gray-100 text-gray-800"
                             }`}

@@ -3,49 +3,105 @@
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, Briefcase, BarChart2, FileText, User } from "lucide-react"
-import { DashboardCharts } from "@/components/dashboard-charts"
-import { useAccountContext } from "@/components/account-context-provider"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
+// サンプルデータ - 実際の実装ではAPIから取得
+const adAccountsData = [
+  {
+    id: "acc001",
+    name: "Meta広告アカウント",
+    platform: "Meta",
+    budget: 1000000,
+    spent: 750000,
+    kpi: "CPA",
+    target: 2000,
+    current: 1800,
+    achievement: 90,
+    project_id: "pr00001",
+  },
+  {
+    id: "acc002",
+    name: "Google広告アカウント",
+    platform: "Google",
+    budget: 800000,
+    spent: 600000,
+    kpi: "ROAS",
+    target: 300,
+    current: 320,
+    achievement: 107,
+    project_id: "pr00002",
+  },
+  {
+    id: "acc003",
+    name: "Yahoo!広告アカウント",
+    platform: "Yahoo",
+    budget: 500000,
+    spent: 350000,
+    kpi: "CPC",
+    target: 150,
+    current: 130,
+    achievement: 115,
+    project_id: "pr00003",
+  },
+  {
+    id: "acc004",
+    name: "Twitter広告アカウント",
+    platform: "Twitter",
+    budget: 300000,
+    spent: 200000,
+    kpi: "CPM",
+    target: 800,
+    current: 750,
+    achievement: 94,
+    project_id: "pr00004",
+  },
+  {
+    id: "acc005",
+    name: "TikTok広告アカウント",
+    platform: "TikTok",
+    budget: 400000,
+    spent: 250000,
+    kpi: "CTR",
+    target: 2.5,
+    current: 3.1,
+    achievement: 124,
+    project_id: "pr00005",
+  },
+]
+
 export default function Home() {
-  const { selectedAccountsData, isLoading } = useAccountContext()
   const [stats, setStats] = useState({
     clients: 0,
     projects: 0,
     campaigns: 0,
     ads: 0,
   })
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     // 実際の実装ではAPIからデータを取得
-    // 選択されたアカウントに基づいてデータを取得
     const fetchDashboardData = async () => {
+      setIsLoading(true)
       try {
         // サンプルデータ - 実際の実装ではAPIから取得
-        // 選択されたアカウントの数に応じてデータを変更
         setStats({
-          clients: 12 * selectedAccountsData.length,
-          projects: 24 * selectedAccountsData.length,
-          campaigns: 48 * selectedAccountsData.length,
-          ads: 120 * selectedAccountsData.length,
+          clients: 45,
+          projects: 87,
+          campaigns: 156,
+          ads: 432,
         })
       } catch (error) {
         console.error("ダッシュボードデータの取得に失敗しました", error)
+      } finally {
+        setIsLoading(false)
       }
     }
 
-    if (selectedAccountsData.length > 0) {
-      fetchDashboardData()
-    } else {
-      setStats({
-        clients: 0,
-        projects: 0,
-        campaigns: 0,
-        ads: 0,
-      })
-    }
-  }, [selectedAccountsData])
+    fetchDashboardData()
+  }, [])
 
   const getPlatformColor = (platform: string) => {
     switch (platform) {
@@ -64,30 +120,32 @@ export default function Home() {
     }
   }
 
+  const getAchievementColor = (achievement: number) => {
+    if (achievement >= 100) return "text-green-600"
+    if (achievement >= 80) return "text-yellow-600"
+    return "text-red-600"
+  }
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("ja-JP", {
+      style: "currency",
+      currency: "JPY",
+      maximumFractionDigits: 0,
+    }).format(value)
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col space-y-2">
         <h1 className="text-2xl font-bold tracking-tight">ダッシュボード</h1>
-        {selectedAccountsData.length > 0 ? (
-          <div className="flex flex-wrap gap-2">
-            {selectedAccountsData.map((account) => (
-              <Badge key={account.id} className={cn("text-xs", getPlatformColor(account.platform))}>
-                {account.name}
-              </Badge>
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-gray-500">
-            アカウントが選択されていません。ヘッダーからアカウントを選択してください。
-          </p>
-        )}
+        <p className="text-sm text-gray-500">全ての広告アカウントの統合データを表示しています</p>
       </div>
 
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
           <p>読み込み中...</p>
         </div>
-      ) : selectedAccountsData.length > 0 ? (
+      ) : (
         <>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
@@ -135,7 +193,62 @@ export default function Home() {
             </Card>
           </div>
 
-          <DashboardCharts />
+          <Card>
+            <CardHeader>
+              <CardTitle>広告アカウント別パフォーマンス</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>広告アカウント</TableHead>
+                      <TableHead className="text-right">予算</TableHead>
+                      <TableHead className="text-right">消化金額</TableHead>
+                      <TableHead>KPI</TableHead>
+                      <TableHead className="text-right">目標値</TableHead>
+                      <TableHead className="text-right">現在値</TableHead>
+                      <TableHead>達成状況</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {adAccountsData.map((account) => (
+                      <TableRow key={account.id}>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <span>{account.name}</span>
+                            <Badge className={cn("text-xs", getPlatformColor(account.platform))}>
+                              {account.platform}
+                            </Badge>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">{formatCurrency(account.budget)}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex flex-col items-end">
+                            <span>{formatCurrency(account.spent)}</span>
+                            <span className="text-xs text-gray-500">
+                              {Math.round((account.spent / account.budget) * 100)}%
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell>{account.kpi}</TableCell>
+                        <TableCell className="text-right">{account.target.toLocaleString()}</TableCell>
+                        <TableCell className="text-right">{account.current.toLocaleString()}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <Progress value={account.achievement} className="w-[60px]" />
+                            <span className={cn("text-sm font-medium", getAchievementColor(account.achievement))}>
+                              {account.achievement}%
+                            </span>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
 
           <Card>
             <CardHeader>
@@ -169,13 +282,6 @@ export default function Home() {
             </CardContent>
           </Card>
         </>
-      ) : (
-        <div className="flex justify-center items-center h-64 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-          <div className="text-center">
-            <p className="text-gray-500 mb-2">アカウントが選択されていません</p>
-            <p className="text-sm text-gray-400">ヘッダーからアカウントを選択してデータを表示します</p>
-          </div>
-        </div>
       )}
     </div>
   )

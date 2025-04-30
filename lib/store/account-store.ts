@@ -1,11 +1,24 @@
 import { create } from "zustand"
-import { persist } from "zustand/middleware"
+import { persist, createJSONStorage } from "zustand/middleware"
 
 interface AccountState {
   selectedAccounts: string[]
   toggleAccount: (accountId: string) => void
   setAccounts: (accountIds: string[]) => void
   clearAccounts: () => void
+}
+
+// クライアントサイドでのみlocalStorageを使用するためのカスタムストレージ
+const createClientSideStorage = () => {
+  if (typeof window === "undefined") {
+    // サーバーサイドではダミーのストレージを返す
+    return {
+      getItem: () => null,
+      setItem: () => {},
+      removeItem: () => {},
+    }
+  }
+  return localStorage
 }
 
 export const useAccountStore = create<AccountState>()(
@@ -23,6 +36,7 @@ export const useAccountStore = create<AccountState>()(
     }),
     {
       name: "account-storage",
+      storage: createJSONStorage(() => createClientSideStorage()),
     },
   ),
 )

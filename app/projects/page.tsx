@@ -10,41 +10,46 @@ const projects = [
     id: "pr00001",
     name: "夏季キャンペーン",
     client: "株式会社ABC",
+    client_id: "cl00001",
     start_date: "2023-06-01",
     end_date: "2023-08-31",
-    status: "進行中",
+    status: "active",
   },
   {
     id: "pr00002",
     name: "新商品発表",
     client: "株式会社ABC",
+    client_id: "cl00001",
     start_date: "2023-09-01",
     end_date: "2023-10-31",
-    status: "準備中",
+    status: "draft",
   },
   {
     id: "pr00003",
     name: "年末セール",
     client: "DEF株式会社",
+    client_id: "cl00002",
     start_date: "2023-11-01",
     end_date: "2023-12-31",
-    status: "計画中",
+    status: "draft",
   },
   {
     id: "pr00004",
     name: "ブランドリニューアル",
     client: "GHI工業",
+    client_id: "cl00003",
     start_date: "2023-07-01",
     end_date: "2023-09-30",
-    status: "進行中",
+    status: "active",
   },
   {
     id: "pr00005",
     name: "新規顧客獲得",
     client: "JKLサービス",
+    client_id: "cl00004",
     start_date: "2023-08-01",
     end_date: "2023-10-31",
-    status: "進行中",
+    status: "active",
   },
 ]
 
@@ -94,16 +99,16 @@ export default function ProjectsPage() {
                   <TableCell>
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${
-                        project.status === "進行中"
+                        project.status === "active"
                           ? "bg-green-100 text-green-800"
-                          : project.status === "準備中"
+                          : project.status === "draft"
                             ? "bg-blue-100 text-blue-800"
                             : project.status === "計画中"
                               ? "bg-yellow-100 text-yellow-800"
                               : "bg-gray-100 text-gray-800"
                       }`}
                     >
-                      {project.status}
+                      {project.status === "active" ? "進行中" : project.status === "draft" ? "準備中" : "計画中"}
                     </span>
                   </TableCell>
                   <TableCell className="text-right">
