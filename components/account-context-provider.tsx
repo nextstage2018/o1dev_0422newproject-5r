@@ -5,17 +5,53 @@ import { useAccountStore } from "@/lib/store/account-store"
 
 // サンプルデータ - 実際の実装ではAPIから取得
 const adAccounts = [
-  { id: "acc001", name: "Meta広告アカウント", platform: "Meta", project_id: "pr00001" },
-  { id: "acc002", name: "Google広告アカウント", platform: "Google", project_id: "pr00002" },
-  { id: "acc003", name: "Yahoo!広告アカウント", platform: "Yahoo", project_id: "pr00003" },
-  { id: "acc004", name: "Twitter広告アカウント", platform: "Twitter", project_id: "pr00004" },
-  { id: "acc005", name: "TikTok広告アカウント", platform: "TikTok", project_id: "pr00005" },
+  {
+    id: "acc001",
+    name: "Meta広告アカウント",
+    account_id: "123456789012345",
+    project_id: "pr00001",
+    project_name: "夏季キャンペーン",
+  },
+  {
+    id: "acc002",
+    name: "Meta広告アカウント",
+    account_id: "234567890123456",
+    project_id: "pr00002",
+    project_name: "年末プロモーション",
+  },
+  {
+    id: "acc003",
+    name: "Meta広告アカウント",
+    account_id: "345678901234567",
+    project_id: "pr00003",
+    project_name: "ブランディング",
+  },
+  {
+    id: "acc004",
+    name: "Meta広告アカウント",
+    account_id: "456789012345678",
+    project_id: "pr00004",
+    project_name: "新規顧客獲得",
+  },
+  {
+    id: "acc005",
+    name: "Meta広告アカウント",
+    account_id: "567890123456789",
+    project_id: "pr00005",
+    project_name: "認知拡大",
+  },
 ]
 
 interface AccountContextType {
   selectedAccounts: string[]
   toggleAccount: (accountId: string) => void
-  getSelectedAccountsInfo: () => { id: string; name: string; platform: string; project_id: string }[]
+  getSelectedAccountsInfo: () => {
+    id: string
+    name: string
+    account_id: string
+    project_id: string
+    project_name: string
+  }[]
   isMounted: boolean
 }
 
