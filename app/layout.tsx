@@ -1,10 +1,8 @@
 import type { ReactNode } from "react"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import Sidebar from "@/components/sidebar"
-import Header from "@/components/header"
 import { Toaster } from "@/components/toaster"
-import { AccountContextProvider } from "@/components/account-context-provider"
+import { AuthProvider } from "@/lib/auth/auth-context"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -22,16 +20,10 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className={inter.className}>
-        <AccountContextProvider>
-          <div className="flex h-screen bg-gray-100">
-            <Sidebar />
-            <div className="flex-1 flex flex-col overflow-hidden">
-              <Header />
-              <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">{children}</main>
-            </div>
-          </div>
+        <AuthProvider>
+          {children}
           <Toaster />
-        </AccountContextProvider>
+        </AuthProvider>
       </body>
     </html>
   )

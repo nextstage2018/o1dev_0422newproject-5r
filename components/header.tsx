@@ -1,7 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Bell, Search, User, ChevronDown, Check } from "lucide-react"
+import { useState } from "react"
+import Link from "next/link"
+import { Bell, User, LogOut, Settings } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,135 +11,73 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { useAccountStore } from "@/lib/store/account-store"
-import { cn } from "@/lib/utils"
-
-// サンプルデータ - 実際の実装ではAPIから取得
-const adAccounts = [
-  { id: "acc001", name: "Meta広告アカウント", platform: "Meta", project_id: "pr00001" },
-  { id: "acc002", name: "Google広告アカウント", platform: "Google", project_id: "pr00002" },
-  { id: "acc003", name: "Yahoo!広告アカウント", platform: "Yahoo", project_id: "pr00003" },
-  { id: "acc004", name: "Twitter広告アカウント", platform: "Twitter", project_id: "pr00004" },
-  { id: "acc005", name: "TikTok広告アカウント", platform: "TikTok", project_id: "pr00005" },
-]
+import { useAuth } from "@/lib/auth/auth-context"
 
 export default function Header() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const { selectedAccounts, toggleAccount } = useAccountStore()
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const [isMounted, setIsMounted] = useState(false)
+  const { user, logout } = useAuth()
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
 
-  // クライアントサイドでのみ実行されるようにする
-  useEffect(() => {
-    setIsMounted(true)
-  }, [])
-
-  // 実際の実装ではAPIからアカウント情報を取得
-  useEffect(() => {
-    // アカウント情報の初期化（実際の実装ではAPIから取得）
-    if (isMounted && selectedAccounts.length === 0) {
-      toggleAccount(adAccounts[0].id) // デフォルトで最初のアカウントを選択
-    }
-  }, [isMounted, selectedAccounts.length, toggleAccount])
-
-  const getSelectedAccountsText = () => {
-    if (!isMounted || selectedAccounts.length === 0) {
-      return "アカウントを選択"
-    } else if (selectedAccounts.length === 1) {
-      const account = adAccounts.find((acc) => acc.id === selectedAccounts[0])
-      return account ? account.name : "アカウントを選択"
-    } else {
-      return `${selectedAccounts.length}個のアカウントを選択中`
-    }
-  }
-
-  const getPlatformColor = (platform: string) => {
-    switch (platform) {
-      case "Meta":
-        return "bg-blue-100 text-blue-800"
-      case "Google":
-        return "bg-red-100 text-red-800"
-      case "Yahoo":
-        return "bg-purple-100 text-purple-800"
-      case "Twitter":
-        return "bg-sky-100 text-sky-800"
-      case "TikTok":
-        return "bg-gray-100 text-gray-800"
-      default:
-        return "bg-gray-100 text-gray-800"
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+    try {
+      await logout()
+    } catch (error) {
+      console.error("ログアウトエラー:", error)
+    } finally {
+      setIsLoggingOut(false)
     }
   }
 
   return (
-    <header className="bg-white shadow-sm z-10">
-      <div className="flex items-center justify-between px-6 py-3">
-        <div className="flex items-center space-x-4 w-2/3">
-          <div className="relative w-full max-w-md">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <Search className="h-4 w-4 text-gray-400" />
-            </div>
-            <input
-              type="text"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2"
-              placeholder="検索..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+    <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <div className="px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          <div className="flex items-center">
+            <h1 className="text-lg font-medium">広告管理ダッシュボード</h1>
           </div>
-
-          <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="flex items-center justify-between min-w-[240px]">
-                <span className="truncate">{getSelectedAccountsText()}</span>
-                <ChevronDown className="h-4 w-4 ml-2 opacity-50" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[240px]">
-              <DropdownMenuLabel>広告アカウント選択</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {adAccounts.map((account) => (
-                <DropdownMenuCheckboxItem
-                  key={account.id}
-                  checked={isMounted && selectedAccounts.includes(account.id)}
-                  onCheckedChange={() => toggleAccount(account.id)}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center space-x-2">
-                    <span>{account.name}</span>
-                    <Badge className={cn("text-xs", getPlatformColor(account.platform))}>{account.platform}</Badge>
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" aria-label="通知">
+              <Bell className="h-5 w-5" />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative rounded-full">
+                  <User className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">{user?.name || "ユーザー"}</p>
+                    <p className="text-xs leading-none text-muted-foreground">{user?.email || ""}</p>
                   </div>
-                  {isMounted && selectedAccounts.includes(account.id) && <Check className="h-4 w-4 ml-2" />}
-                </DropdownMenuCheckboxItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-
-        <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-5 w-5" />
-            <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
-          </Button>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <User className="h-5 w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>マイアカウント</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>プロフィール</DropdownMenuItem>
-              <DropdownMenuItem>設定</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>ログアウト</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/profile">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>プロフィール</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/settings">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>設定</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  disabled={isLoggingOut}
+                  className="text-red-600 focus:text-red-600"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>{isLoggingOut ? "ログアウト中..." : "ログアウト"}</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
     </header>

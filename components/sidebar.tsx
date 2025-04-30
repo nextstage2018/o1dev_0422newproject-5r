@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Users, Briefcase, BarChart2, Layers, FileText, CheckSquare, Settings, LogOut, Home } from "lucide-react"
+import { UserCog } from "lucide-react"
 
 export default function Sidebar() {
   const pathname = usePathname()
@@ -20,6 +21,7 @@ export default function Sidebar() {
     { name: "広告", href: "/ads", icon: FileText },
     { name: "タスク", href: "/tasks", icon: CheckSquare },
     { name: "検証設計", href: "/tests", icon: CheckSquare },
+    { name: "ユーザー", href: "/users", icon: UserCog },
     { name: "設定", href: "/settings", icon: Settings },
   ]
 
