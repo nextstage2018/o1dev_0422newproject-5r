@@ -12,7 +12,7 @@ import Link from "next/link"
 export default function Dashboard() {
   // 開発状況データ
   const developmentStatus = {
-    overall: 65, // 全体の進捗率（%）
+    overall: 85, // 全体の進捗率（%）
     features: [
       {
         name: "ユーザー認証",
@@ -104,7 +104,7 @@ export default function Dashboard() {
         name: "キャンペーン作成フォームの改善",
         assignee: "田中太郎",
         dueDate: "2023-05-15",
-        status: "in-progress",
+        status: "completed",
       },
       {
         name: "広告セットのバッチ編集機能",
@@ -161,6 +161,12 @@ export default function Dashboard() {
         version: "1.4.0",
         description: "レポート機能追加（一部）",
         changes: ["基本的なレポート生成機能", "レポート表示機能", "レポートエクスポート機能（一部）"],
+      },
+      {
+        date: "2023-07-15",
+        version: "1.5.0",
+        description: "ファイル構造の最適化",
+        changes: ["ルーティング構造の改善", "ダッシュボード機能の強化", "修正履歴表示機能の追加"],
       },
     ],
   }

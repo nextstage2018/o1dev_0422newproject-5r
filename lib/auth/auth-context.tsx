@@ -27,6 +27,10 @@ interface AuthContextType {
 // 認証コンテキストの作成
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+// 固定のログイン情報
+const FIXED_EMAIL = "abc@abc.com"
+const FIXED_PASSWORD = "1234"
+
 // 認証プロバイダーコンポーネント
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
@@ -73,14 +77,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string, remember = false) => {
     setIsLoading(true)
     try {
-      // 実際の環境では、APIを呼び出してログイン処理を行います
-      // const response = await fetch('/api/auth/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email, password }),
-      // })
-      // const data = await response.json()
-      // if (!response.ok) throw new Error(data.message)
+      // 固定のログイン情報と比較
+      if (email !== FIXED_EMAIL || password !== FIXED_PASSWORD) {
+        throw new Error("メールアドレスまたはパスワードが正しくありません。")
+      }
 
       // デモ用のモックユーザー
       const mockUser: User = {
@@ -112,9 +112,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     setIsLoading(true)
     try {
-      // 実際の環境では、APIを呼び出してログアウト処理を行います
-      // await fetch('/api/auth/logout', { method: 'POST' })
-
       // ユーザー情報をクリア
       setUser(null)
       localStorage.removeItem("user")
@@ -133,12 +130,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // パスワードリセットリクエスト
   const forgotPassword = async (email: string) => {
     try {
-      // 実際の環境では、APIを呼び出してパスワードリセットメールを送信します
-      // await fetch('/api/auth/forgot-password', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email }),
-      // })
+      // テスト環境では、固定のメールアドレスのみ許可
+      if (email !== FIXED_EMAIL) {
+        throw new Error("登録されていないメールアドレスです。")
+      }
 
       // デモ用に成功を返す
       return Promise.resolve()
@@ -151,14 +146,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // パスワードリセット
   const resetPassword = async (token: string, password: string) => {
     try {
-      // 実際の環境では、APIを呼び出してパスワードをリセットします
-      // await fetch('/api/auth/reset-password', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ token, password }),
-      // })
-
-      // デモ用に成功を返す
+      // テスト環境では常に成功
       return Promise.resolve()
     } catch (error) {
       console.error("パスワードリセットに失敗しました:", error)

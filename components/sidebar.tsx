@@ -4,12 +4,22 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Users, Briefcase, BarChart2, Layers, FileText, CheckSquare, Settings, LogOut, Home } from "lucide-react"
 import { UserCog } from "lucide-react"
+import { useAuth } from "@/lib/auth/auth-context"
 
 export default function Sidebar() {
   const pathname = usePathname()
+  const { logout } = useAuth()
 
   const isActive = (path: string) => {
     return pathname === path || pathname?.startsWith(`${path}/`)
+  }
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+    } catch (error) {
+      console.error("ログアウトに失敗しました:", error)
+    }
   }
 
   const navItems = [
@@ -51,7 +61,7 @@ export default function Sidebar() {
         </ul>
       </nav>
       <div className="p-4 border-t">
-        <button className="flex items-center text-sm text-gray-700 hover:text-gray-900 w-full">
+        <button className="flex items-center text-sm text-gray-700 hover:text-gray-900 w-full" onClick={handleLogout}>
           <LogOut className="h-5 w-5 mr-3" />
           ログアウト
         </button>

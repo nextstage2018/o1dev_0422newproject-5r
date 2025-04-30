@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
-import { Bell, User, LogOut, Settings } from "lucide-react"
+import { Bell, Search, User } from "lucide-react"
+import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -15,70 +15,54 @@ import {
 import { useAuth } from "@/lib/auth/auth-context"
 
 export default function Header() {
+  const [searchQuery, setSearchQuery] = useState("")
   const { user, logout } = useAuth()
-  const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const handleLogout = async () => {
-    setIsLoggingOut(true)
     try {
       await logout()
     } catch (error) {
-      console.error("ログアウトエラー:", error)
-    } finally {
-      setIsLoggingOut(false)
+      console.error("ログアウトに失敗しました:", error)
     }
   }
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-      <div className="px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          <div className="flex items-center">
-            <h1 className="text-lg font-medium">広告管理ダッシュボード</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" aria-label="通知">
-              <Bell className="h-5 w-5" />
+    <header className="bg-white border-b border-gray-200 py-3 px-4 flex items-center justify-between">
+      <div className="flex items-center w-full max-w-md">
+        <Search className="h-5 w-5 text-gray-400 mr-2" />
+        <Input
+          type="search"
+          placeholder="検索..."
+          className="border-none shadow-none focus-visible:ring-0"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
+      <div className="flex items-center space-x-4">
+        <Button variant="ghost" size="icon" className="relative">
+          <Bell className="h-5 w-5" />
+          <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
+        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="rounded-full">
+              <User className="h-5 w-5" />
             </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative rounded-full">
-                  <User className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{user?.name || "ユーザー"}</p>
-                    <p className="text-xs leading-none text-muted-foreground">{user?.email || ""}</p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/profile">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>プロフィール</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/settings">
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>設定</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={handleLogout}
-                  disabled={isLoggingOut}
-                  className="text-red-600 focus:text-red-600"
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>{isLoggingOut ? "ログアウト中..." : "ログアウト"}</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>
+              <div className="flex flex-col">
+                <span>{user?.name || "ユーザー"}</span>
+                <span className="text-xs text-gray-500">{user?.email || ""}</span>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>プロフィール</DropdownMenuItem>
+            <DropdownMenuItem>設定</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleLogout}>ログアウト</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   )

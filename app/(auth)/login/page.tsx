@@ -11,10 +11,11 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useAuth } from "@/lib/auth/auth-context"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [email, setEmail] = useState("abc@abc.com") // デフォルト値を設定
+  const [password, setPassword] = useState("1234") // デフォルト値を設定
   const [rememberMe, setRememberMe] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
@@ -97,7 +98,11 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
       <div>
         <Button type="submit" disabled={isLoading} className="w-full">
@@ -110,6 +115,12 @@ export default function LoginPage() {
             "ログイン"
           )}
         </Button>
+      </div>
+
+      <div className="text-sm text-center text-gray-600 mt-4">
+        <p>テスト用ログイン情報:</p>
+        <p>メールアドレス: abc@abc.com</p>
+        <p>パスワード: 1234</p>
       </div>
     </form>
   )
