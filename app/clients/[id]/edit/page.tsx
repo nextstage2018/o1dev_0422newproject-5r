@@ -5,20 +5,15 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { DynamicForm } from "@/components/dynamic-form"
 import { ArrowLeft } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
+import { useClientStore } from "@/lib/store/client-store"
 
-// クライアントフィールドの定義
+// クライアントフィールドの定義（クライアントIDを除く）
 const clientFields = [
-  {
-    id: "client_id",
-    name: "クライアントID",
-    type: "string",
-    required: true,
-    visible: true,
-    table: "dim_client",
-  },
   {
     id: "client_name",
     name: "クライアント名",
@@ -98,79 +93,36 @@ const clientFields = [
   },
 ]
 
-// サンプルデータ - 実際の実装ではAPIから取得
-const clientsData = {
-  cl00001: {
-    client_id: "cl00001",
-    client_name: "株式会社ABC",
-    industry: "小売",
-    contact_person: "山田太郎",
-    email: "yamada@abc.co.jp",
-    phone: "03-1234-5678",
-    address: "東京都渋谷区渋谷1-1-1",
-    status: "active",
-    notes: "大手小売チェーン。季節ごとのキャンペーンを実施。",
-  },
-  cl00002: {
-    client_id: "cl00002",
-    client_name: "DEF株式会社",
-    industry: "IT",
-    contact_person: "佐藤花子",
-    email: "sato@def.co.jp",
-    phone: "03-2345-6789",
-    address: "東京都新宿区新宿2-2-2",
-    status: "active",
-    notes: "ITサービス企業。ウェブマーケティングに注力。",
-  },
-  cl00003: {
-    client_id: "cl00003",
-    client_name: "GHI工業",
-    industry: "製造",
-    contact_person: "鈴木一郎",
-    email: "suzuki@ghi.co.jp",
-    phone: "03-3456-7890",
-    address: "大阪府大阪市中央区3-3-3",
-    status: "inactive",
-    notes: "製造業。現在は取引休止中。",
-  },
-}
-
 export default function EditClientPage({ params }: { params: { id: string } }) {
   const router = useRouter()
-  const clientId = params.id || "cl00001" // デフォルト値を設定
+  const clientId = params.id
+  const { getClient, updateClient } = useClientStore()
   const [isLoading, setIsLoading] = useState(true)
   const [fields, setFields] = useState(clientFields)
   const [clientData, setClientData] = useState<Record<string, any> | null>(null)
 
-  // 実際の実装では、APIからクライアント情報とフィールド設定を取得
+  // ストアからクライアント情報を取得
   useEffect(() => {
     const fetchClientData = async () => {
       try {
-        // 実際の実装ではAPIからデータを取得
-        // const response = await fetch(`/api/clients/${clientId}`);
-        // const data = await response.json();
-        // setClientData(data);
+        setIsLoading(true)
+        const data = getClient(clientId)
 
-        // ここではモックデータを使用
-        setTimeout(() => {
-          const data = clientsData[clientId as keyof typeof clientsData]
-          if (data) {
-            setClientData(data)
-            setFields(clientFields)
-            setIsLoading(false)
-          } else {
-            // エラーメッセージを表示して一覧ページにリダイレクト
-            toast({
-              title: "エラー",
-              description: "クライアント情報が見つかりませんでした",
-              variant: "destructive",
-            })
-            // 少し遅延させてからリダイレクト
-            setTimeout(() => {
-              router.push("/clients")
-            }, 1500)
-          }
-        }, 500)
+        if (data) {
+          setClientData(data)
+          setIsLoading(false)
+        } else {
+          // エラーメッセージを表示して一覧ページにリダイレクト
+          toast({
+            title: "エラー",
+            description: `クライアント情報が見つかりませんでした (ID: ${clientId})`,
+            variant: "destructive",
+          })
+          // 少し遅延させてからリダイレクト
+          setTimeout(() => {
+            router.push("/clients")
+          }, 1500)
+        }
       } catch (error) {
         console.error("データ取得エラー:", error)
         toast({
@@ -183,18 +135,19 @@ export default function EditClientPage({ params }: { params: { id: string } }) {
     }
 
     fetchClientData()
-  }, [clientId, router])
+  }, [clientId, router, getClient])
 
   const handleSubmit = async (values: Record<string, any>) => {
     setIsLoading(true)
     try {
-      // ここでAPIリクエストを送信する
-      // 例: await fetch(`/api/clients/${clientId}`, {
-      //   method: 'PUT',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(values)
-      // });
-      console.log("更新データ:", values)
+      // クライアントIDは変更不可
+      const updatedValues = {
+        ...values,
+        client_id: clientId, // 元のIDを強制的に使用
+      }
+
+      // ストアを使用してクライアント情報を更新
+      updateClient(clientId, updatedValues)
 
       // 成功メッセージを表示
       toast({
@@ -241,14 +194,23 @@ export default function EditClientPage({ params }: { params: { id: string } }) {
               <p>読み込み中...</p>
             </div>
           ) : (
-            <DynamicForm
-              fields={fields}
-              initialValues={clientData}
-              onSubmit={handleSubmit}
-              submitLabel="更新"
-              cancelLabel="キャンセル"
-              onCancel={() => router.push(`/clients/${clientId}`)}
-            />
+            <div className="space-y-6">
+              {/* クライアントIDを別途表示（編集不可） */}
+              <div className="space-y-2">
+                <Label htmlFor="client_id">クライアントID</Label>
+                <Input id="client_id" value={clientData.client_id} disabled readOnly className="bg-gray-100" />
+              </div>
+
+              {/* 他のフィールドはDynamicFormで表示 */}
+              <DynamicForm
+                fields={fields}
+                initialValues={clientData}
+                onSubmit={handleSubmit}
+                submitLabel="更新"
+                cancelLabel="キャンセル"
+                onCancel={() => router.push(`/clients/${clientId}`)}
+              />
+            </div>
           )}
         </CardContent>
       </Card>

@@ -275,23 +275,25 @@ export default function ClientsPage() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>アクション</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(client.id)}>
-                              IDをコピー
+                            <DropdownMenuItem asChild>
+                              <button onClick={() => navigator.clipboard.writeText(client.id)}>IDをコピー</button>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem>
+                            <DropdownMenuItem asChild>
                               <Link href={`/clients/${client.id}`} className="flex w-full">
                                 詳細を表示
                               </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem asChild>
                               <Link href={`/clients/${client.id}/edit`} className="flex w-full">
                                 編集する
                               </Link>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-red-600" onClick={() => handleDelete(client.id)}>
-                              削除する
+                            <DropdownMenuItem asChild>
+                              <button className="text-red-600 flex w-full" onClick={() => handleDelete(client.id)}>
+                                削除する
+                              </button>
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>

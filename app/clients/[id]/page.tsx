@@ -1,3 +1,7 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -5,22 +9,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ArrowLeft, Edit, Plus } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import { useClientStore, type Client } from "@/lib/store/client-store"
+import { toast } from "@/components/ui/use-toast"
 
-// サンプルデータ
-const client = {
-  id: "cl00001",
-  name: "株式会社ABC",
-  industry: "小売",
-  contact_person: "山田太郎",
-  email: "yamada@abc.co.jp",
-  phone: "03-1234-5678",
-  address: "東京都渋谷区渋谷1-1-1",
-  status: "active",
-  created_at: "2023-04-01",
-  updated_at: "2023-04-10",
-  notes: "大手小売チェーン。季節ごとのキャンペーンを実施。",
-}
-
+// サンプルプロジェクトデータ
 const projects = [
   {
     id: "pr00001",
@@ -41,6 +33,44 @@ const projects = [
 ]
 
 export default function ClientDetailPage({ params }: { params: { id: string } }) {
+  const router = useRouter()
+  const { getClient } = useClientStore()
+  const [client, setClient] = useState<Client | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchClientData = () => {
+      setIsLoading(true)
+      try {
+        const clientData = getClient(params.id)
+        if (clientData) {
+          setClient(clientData)
+        } else {
+          toast({
+            title: "エラー",
+            description: "クライアント情報が見つかりませんでした",
+            variant: "destructive",
+          })
+          setTimeout(() => {
+            router.push("/clients")
+          }, 1500)
+        }
+      } catch (error) {
+        console.error("データ取得エラー:", error)
+        toast({
+          title: "エラーが発生しました",
+          description: "クライアント情報の取得に失敗しました",
+          variant: "destructive",
+        })
+        router.push("/clients")
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchClientData()
+  }, [params.id, getClient, router])
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("ja-JP", {
       style: "currency",
@@ -60,6 +90,18 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
       default:
         return <Badge className="bg-gray-100 text-gray-800">{status}</Badge>
     }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-40">
+        <p>読み込み中...</p>
+      </div>
+    )
+  }
+
+  if (!client) {
+    return null
   }
 
   return (
@@ -83,8 +125,8 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
 
       <Card>
         <CardHeader>
-          <CardTitle>{client.name}</CardTitle>
-          <CardDescription>ID: {client.id}</CardDescription>
+          <CardTitle>{client.client_name}</CardTitle>
+          <CardDescription>ID: {client.client_id}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -102,28 +144,20 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
             </div>
             <div>
               <h3 className="text-sm font-medium text-gray-500">電話番号</h3>
-              <p>{client.phone}</p>
+              <p>{client.phone || "未設定"}</p>
             </div>
             <div>
               <h3 className="text-sm font-medium text-gray-500">住所</h3>
-              <p>{client.address}</p>
+              <p>{client.address || "未設定"}</p>
             </div>
             <div>
               <h3 className="text-sm font-medium text-gray-500">ステータス</h3>
               <p>{getStatusBadge(client.status)}</p>
             </div>
-            <div>
-              <h3 className="text-sm font-medium text-gray-500">作成日</h3>
-              <p>{client.created_at}</p>
-            </div>
-            <div>
-              <h3 className="text-sm font-medium text-gray-500">更新日</h3>
-              <p>{client.updated_at}</p>
-            </div>
           </div>
           <div className="mt-4">
             <h3 className="text-sm font-medium text-gray-500">備考</h3>
-            <p className="mt-1">{client.notes}</p>
+            <p className="mt-1">{client.notes || "備考はありません"}</p>
           </div>
         </CardContent>
       </Card>
