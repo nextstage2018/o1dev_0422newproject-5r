@@ -4,8 +4,8 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Bell, Search, User } from "lucide-react"
 
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,92 +14,80 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { useAccountStore } from "@/lib/store/account-store"
+import { useAuth } from "@/lib/auth/auth-context"
 
 export default function Header() {
   const pathname = usePathname()
-  const { currentAccount, accounts, setCurrentAccount } = useAccountStore()
+  const { logout } = useAuth()
 
-  // パスに基づいてページタイトルを取得
+  // パスからページタイトルを取得
   const getPageTitle = () => {
-    const pathSegments = pathname?.split("/").filter(Boolean) || []
-    const mainPath = pathSegments[0] || "dashboard"
+    if (pathname === "/") return "ダッシュボード"
+    if (pathname === "/analytics") return "分析"
+    if (pathname === "/clients" || pathname?.startsWith("/clients/")) return "クライアント"
+    if (pathname === "/projects" || pathname?.startsWith("/projects/")) return "プロジェクト"
+    if (pathname === "/campaigns" || pathname?.startsWith("/campaigns/")) return "キャンペーン"
+    if (pathname === "/adsets" || pathname?.startsWith("/adsets/")) return "広告セット"
+    if (pathname === "/ads" || pathname?.startsWith("/ads/")) return "広告"
+    if (pathname === "/creatives" || pathname?.startsWith("/creatives/")) return "クリエイティブ"
+    if (pathname === "/tasks" || pathname?.startsWith("/tasks/")) return "タスク"
+    if (pathname === "/tests" || pathname?.startsWith("/tests/")) return "テスト"
+    if (pathname === "/users" || pathname?.startsWith("/users/")) return "ユーザー"
+    if (pathname === "/settings" || pathname?.startsWith("/settings/")) return "設定"
+    return ""
+  }
 
-    const titles: Record<string, string> = {
-      dashboard: "ダッシュボード",
-      analytics: "分析",
-      clients: "クライアント",
-      projects: "プロジェクト",
-      campaigns: "キャンペーン",
-      adsets: "広告セット",
-      ads: "広告",
-      creatives: "クリエイティブ",
-      tasks: "タスク",
-      tests: "テスト",
-      users: "ユーザー",
-      settings: "設定",
+  const handleLogout = async () => {
+    try {
+      await logout()
+    } catch (error) {
+      console.error("ログアウトに失敗しました:", error)
     }
-
-    return titles[mainPath] || "ダッシュボード"
   }
 
   return (
-    <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
-      <Link href="/" className="hidden items-center gap-2 md:flex">
-        <span className="text-xl font-bold">広告管理システム</span>
-      </Link>
-      <div className="flex-1">
-        <h1 className="text-lg font-semibold md:text-xl">{getPageTitle()}</h1>
-      </div>
-      <div className="flex items-center gap-4 md:gap-6">
-        <form className="hidden md:block">
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input type="search" placeholder="検索..." className="w-64 rounded-lg bg-background pl-8 md:w-80" />
+    <header className="border-b bg-white">
+      <div className="flex h-16 items-center px-4">
+        <div className="flex items-center gap-4">
+          <Link href="/" className="flex items-center">
+            <span className="text-xl font-bold">広告管理システム</span>
+          </Link>
+          <span className="text-lg font-medium">{getPageTitle()}</span>
+        </div>
+        <div className="ml-auto flex items-center gap-4">
+          <div className="relative w-64">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input placeholder="検索..." className="pl-8" />
           </div>
-        </form>
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-5 w-5" />
-          <span className="absolute right-1 top-1 flex h-2 w-2 rounded-full bg-red-600" />
-          <span className="sr-only">通知</span>
-        </Button>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <User className="h-5 w-5" />
-              <span className="sr-only">ユーザーメニュー</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>マイアカウント</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>プロフィール</DropdownMenuItem>
-            <DropdownMenuItem>設定</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>ログアウト</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="hidden md:flex">
-              {currentAccount?.name || "アカウント選択"}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>アカウント切替</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {accounts.map((account) => (
-              <DropdownMenuItem
-                key={account.id}
-                className={cn("cursor-pointer", currentAccount?.id === account.id && "bg-muted font-medium")}
-                onClick={() => setCurrentAccount(account)}
-              >
-                {account.name}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+          <Button variant="ghost" size="icon">
+            <Bell className="h-5 w-5" />
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <User className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>マイアカウント</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>プロフィール</DropdownMenuItem>
+              <DropdownMenuItem>設定</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout}>ログアウト</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">アカウント選択</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem>アカウント1</DropdownMenuItem>
+              <DropdownMenuItem>アカウント2</DropdownMenuItem>
+              <DropdownMenuItem>アカウント3</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </header>
   )

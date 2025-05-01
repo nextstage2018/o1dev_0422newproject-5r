@@ -26,10 +26,10 @@ export default function Sidebar({ className }: React.HTMLAttributes<HTMLDivEleme
   const pathname = usePathname()
 
   return (
-    <div className={cn("w-56 bg-white shadow-sm", className)}>
-      <div className="space-y-2 py-4">
-        <div className="px-3 py-1">
-          <h2 className="mb-1 px-4 text-sm font-semibold tracking-tight">ダッシュボード</h2>
+    <div className={cn("pb-12 w-56", className)}>
+      <div className="space-y-4 py-4">
+        <div className="px-3 py-2">
+          <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">ダッシュボード</h2>
           <div className="space-y-1">
             <Button variant={pathname === "/" ? "secondary" : "ghost"} className="w-full justify-start" asChild>
               <Link href="/">
@@ -49,8 +49,8 @@ export default function Sidebar({ className }: React.HTMLAttributes<HTMLDivEleme
             </Button>
           </div>
         </div>
-        <div className="px-3 py-1">
-          <h2 className="mb-1 px-4 text-sm font-semibold tracking-tight">プロジェクト管理</h2>
+        <div className="px-3 py-2">
+          <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">プロジェクト管理</h2>
           <div className="space-y-1">
             <Button
               variant={pathname === "/clients" || pathname?.startsWith("/clients/") ? "secondary" : "ghost"}
@@ -84,8 +84,8 @@ export default function Sidebar({ className }: React.HTMLAttributes<HTMLDivEleme
             </Button>
           </div>
         </div>
-        <div className="px-3 py-1">
-          <h2 className="mb-1 px-4 text-sm font-semibold tracking-tight">広告管理</h2>
+        <div className="px-3 py-2">
+          <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">広告管理</h2>
           <div className="space-y-1">
             <Button
               variant={pathname === "/campaigns" || pathname?.startsWith("/campaigns/") ? "secondary" : "ghost"}
@@ -129,8 +129,8 @@ export default function Sidebar({ className }: React.HTMLAttributes<HTMLDivEleme
             </Button>
           </div>
         </div>
-        <div className="px-3 py-1">
-          <h2 className="mb-1 px-4 text-sm font-semibold tracking-tight">テスト</h2>
+        <div className="px-3 py-2">
+          <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">テスト</h2>
           <div className="space-y-1">
             <Button variant={pathname === "/tests" ? "secondary" : "ghost"} className="w-full justify-start" asChild>
               <Link href="/tests">
@@ -160,8 +160,8 @@ export default function Sidebar({ className }: React.HTMLAttributes<HTMLDivEleme
             </Button>
           </div>
         </div>
-        <div className="px-3 py-1">
-          <h2 className="mb-1 px-4 text-sm font-semibold tracking-tight">管理</h2>
+        <div className="px-3 py-2">
+          <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">管理</h2>
           <div className="space-y-1">
             <Button
               variant={pathname === "/users" || pathname?.startsWith("/users/") ? "secondary" : "ghost"}

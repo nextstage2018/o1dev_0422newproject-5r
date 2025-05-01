@@ -31,21 +31,30 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 const FIXED_EMAIL = "abc@abc.com"
 const FIXED_PASSWORD = "1234"
 
+// デモ用のモックユーザー
+const mockUser: User = {
+  id: "1",
+  name: "テストユーザー",
+  email: FIXED_EMAIL,
+  type: "internal",
+}
+
 // 認証プロバイダーコンポーネント
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  // 初期状態で自動的にログイン済みの状態にする
+  const [user, setUser] = useState<User | null>(mockUser)
+  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
 
-  // 初期化時に認証状態を確認
+  // 初期化時に認証状態を確認（自動ログイン状態を維持）
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // ローカルストレージからユーザー情報を取得
-        const storedUser = localStorage.getItem("user")
-        if (storedUser) {
-          setUser(JSON.parse(storedUser))
+        // 自動的にログイン状態にする
+        if (!user) {
+          setUser(mockUser)
+          localStorage.setItem("user", JSON.stringify(mockUser))
         }
       } catch (error) {
         console.error("認証状態の確認に失敗しました:", error)
@@ -55,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     checkAuth()
-  }, [])
+  }, [user])
 
   // 認証状態に基づいてリダイレクト
   useEffect(() => {
@@ -63,31 +72,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const authRoutes = ["/login", "/forgot-password", "/reset-password"]
       const isAuthRoute = authRoutes.some((route) => pathname?.startsWith(route))
 
-      if (!user && !isAuthRoute && pathname !== "/") {
-        // 未認証かつ認証が必要なルートの場合、ログインページにリダイレクト
-        router.push("/login")
-      } else if (user && isAuthRoute) {
-        // 認証済みかつ認証ルートの場合、ダッシュボードにリダイレクト
+      // 認証ルートにアクセスした場合、ダッシュボードにリダイレクト
+      if (isAuthRoute) {
         router.push("/")
       }
     }
-  }, [user, isLoading, pathname, router])
+  }, [isLoading, pathname, router])
 
-  // ログイン処理
+  // ログイン処理（機能は残しておく）
   const login = async (email: string, password: string, remember = false) => {
     setIsLoading(true)
     try {
       // 固定のログイン情報と比較
       if (email !== FIXED_EMAIL || password !== FIXED_PASSWORD) {
         throw new Error("メールアドレスまたはパスワードが正しくありません。")
-      }
-
-      // デモ用のモックユーザー
-      const mockUser: User = {
-        id: "1",
-        name: "テストユーザー",
-        email,
-        type: "internal",
       }
 
       // ユーザー情報を保存
@@ -117,8 +115,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem("user")
       sessionStorage.removeItem("user")
 
-      // ログインページにリダイレクト
-      router.push("/login")
+      // 自動的に再ログイン
+      setTimeout(() => {
+        setUser(mockUser)
+        localStorage.setItem("user", JSON.stringify(mockUser))
+        router.push("/")
+      }, 100)
     } catch (error) {
       console.error("ログアウトに失敗しました:", error)
       throw error
