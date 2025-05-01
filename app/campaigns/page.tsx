@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus, Search, Filter, MoreHorizontal, ArrowUpDown } from "lucide-react"
+import { toast } from "@/components/ui/use-toast"
 
 // サンプルデータ
 const campaignsData = [
@@ -106,6 +107,7 @@ export default function CampaignsPage() {
   const [objectiveFilter, setObjectiveFilter] = useState("all")
   const [sortField, setSortField] = useState("created_at")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc")
+  const [campaigns, setCampaigns] = useState(campaignsData)
 
   // ステータスに応じたバッジの色を取得する関数
   const getStatusBadge = (status: string) => {
@@ -132,8 +134,20 @@ export default function CampaignsPage() {
     }).format(value)
   }
 
+  // 削除機能の実装
+  const handleDelete = (id: string) => {
+    // 実際の実装ではAPIを呼び出して削除
+    console.log(`キャンペーンID: ${id}を削除します`)
+    // フロントエンドでの削除処理
+    setCampaigns(campaigns.filter((campaign) => campaign.id !== id))
+    toast({
+      title: "キャンペーンを削除しました",
+      description: `キャンペーンID: ${id}を削除しました`,
+    })
+  }
+
   // フィルタリングとソートを適用したデータを取得
-  const filteredCampaigns = campaignsData
+  const filteredCampaigns = campaigns
     .filter((campaign) => {
       // 検索クエリでフィルタリング
       const matchesSearch =
@@ -179,13 +193,13 @@ export default function CampaignsPage() {
   }
 
   // 広告目的の一覧（重複を除去）
-  const objectives = Array.from(new Set(campaignsData.map((campaign) => campaign.objective)))
+  const objectives = Array.from(new Set(campaigns.map((campaign) => campaign.objective)))
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">キャンペーン一覧</h1>
-        <Link href="/campaigns/new">
+        <Link href="/campaigns/new" passHref>
           <Button>
             <Plus className="mr-2 h-4 w-4" />
             新規キャンペーン
@@ -340,7 +354,9 @@ export default function CampaignsPage() {
                               </Link>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-red-600">削除する</DropdownMenuItem>
+                            <DropdownMenuItem className="text-red-600" onClick={() => handleDelete(campaign.id)}>
+                              削除する
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>

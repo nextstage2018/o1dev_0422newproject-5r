@@ -59,7 +59,6 @@ export default function NewAdPage() {
       }
 
       // ここでAPIを呼び出して広告を作成
-      // 実際の実装では、APIエンドポイントを呼び出す
       console.log("Creating ad:", adData)
 
       // 成功メッセージを表示
@@ -69,7 +68,9 @@ export default function NewAdPage() {
       })
 
       // 広告一覧ページにリダイレクト
-      router.push("/ads")
+      setTimeout(() => {
+        router.push("/ads")
+      }, 1000)
     } catch (error) {
       console.error("Error creating ad:", error)
       toast({

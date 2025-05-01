@@ -49,7 +49,6 @@ export default function NewAdSetPage() {
       }
 
       // ここでAPIを呼び出して広告セットを作成
-      // 実際の実装では、APIエンドポイントを呼び出す
       console.log("Creating ad set:", adSetData)
 
       // 成功メッセージを表示
@@ -59,7 +58,9 @@ export default function NewAdSetPage() {
       })
 
       // 広告セット一覧ページにリダイレクト
-      router.push("/adsets")
+      setTimeout(() => {
+        router.push("/adsets")
+      }, 1000)
     } catch (error) {
       console.error("Error creating ad set:", error)
       toast({

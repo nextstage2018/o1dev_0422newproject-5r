@@ -18,7 +18,7 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { toast } from "@/components/ui/use-toast"
 
-export default function NewCampaignPage() {
+export default function NewProjectPage() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [startDate, setStartDate] = useState<Date>()
@@ -31,10 +31,10 @@ export default function NewCampaignPage() {
     try {
       // フォームデータの取得
       const formData = new FormData(e.currentTarget)
-      const campaignData = {
+      const projectData = {
         name: formData.get("name") as string,
         client: formData.get("client") as string,
-        project: formData.get("project") as string,
+        manager: formData.get("manager") as string,
         status: formData.get("status") as string,
         budget: formData.get("budget") as string,
         startDate: startDate?.toISOString(),
@@ -42,24 +42,24 @@ export default function NewCampaignPage() {
         description: formData.get("description") as string,
       }
 
-      // ここでAPIを呼び出してキャンペーンを作成
-      console.log("Creating campaign:", campaignData)
+      // ここでAPIを呼び出してプロジェクトを作成
+      console.log("Creating project:", projectData)
 
       // 成功メッセージを表示
       toast({
-        title: "キャンペーンを作成しました",
-        description: `${campaignData.name}が正常に作成されました。`,
+        title: "プロジェクトを作成しました",
+        description: `${projectData.name}が正常に作成されました。`,
       })
 
-      // キャンペーン一覧ページにリダイレクト
+      // プロジェクト一覧ページにリダイレクト
       setTimeout(() => {
-        router.push("/campaigns")
+        router.push("/projects")
       }, 1000)
     } catch (error) {
-      console.error("Error creating campaign:", error)
+      console.error("Error creating project:", error)
       toast({
         title: "エラーが発生しました",
-        description: "キャンペーンの作成中にエラーが発生しました。もう一度お試しください。",
+        description: "プロジェクトの作成中にエラーが発生しました。もう一度お試しください。",
         variant: "destructive",
       })
     } finally {
@@ -74,20 +74,20 @@ export default function NewCampaignPage() {
           <ChevronLeftIcon className="h-4 w-4 mr-1" />
           戻る
         </Button>
-        <h1 className="text-2xl font-bold">新規キャンペーン作成</h1>
+        <h1 className="text-2xl font-bold">新規プロジェクト作成</h1>
       </div>
 
       <form onSubmit={handleSubmit}>
         <Card>
           <CardHeader>
-            <CardTitle>キャンペーン情報</CardTitle>
-            <CardDescription>新しいキャンペーンの基本情報を入力してください。</CardDescription>
+            <CardTitle>プロジェクト情報</CardTitle>
+            <CardDescription>新しいプロジェクトの基本情報を入力してください。</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="name">キャンペーン名 *</Label>
-                <Input id="name" name="name" required placeholder="キャンペーン名を入力" />
+                <Label htmlFor="name">プロジェクト名 *</Label>
+                <Input id="name" name="name" required placeholder="プロジェクト名を入力" />
               </div>
 
               <div className="space-y-2">
@@ -105,31 +105,31 @@ export default function NewCampaignPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="project">プロジェクト *</Label>
-                <Select name="project" required>
-                  <SelectTrigger id="project">
-                    <SelectValue placeholder="プロジェクトを選択" />
+                <Label htmlFor="manager">プロジェクトマネージャー *</Label>
+                <Select name="manager" required>
+                  <SelectTrigger id="manager">
+                    <SelectValue placeholder="マネージャーを選択" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="project1">2024年春キャンペーン</SelectItem>
-                    <SelectItem value="project2">新商品プロモーション</SelectItem>
-                    <SelectItem value="project3">ブランド認知向上</SelectItem>
+                    <SelectItem value="manager1">山田太郎</SelectItem>
+                    <SelectItem value="manager2">佐藤花子</SelectItem>
+                    <SelectItem value="manager3">鈴木一郎</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="status">ステータス *</Label>
-                <Select name="status" required defaultValue="draft">
+                <Select name="status" required defaultValue="planning">
                   <SelectTrigger id="status">
                     <SelectValue placeholder="ステータスを選択" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="draft">下書き</SelectItem>
-                    <SelectItem value="planned">計画中</SelectItem>
-                    <SelectItem value="active">アクティブ</SelectItem>
-                    <SelectItem value="paused">一時停止</SelectItem>
+                    <SelectItem value="planning">計画中</SelectItem>
+                    <SelectItem value="inProgress">進行中</SelectItem>
+                    <SelectItem value="onHold">保留中</SelectItem>
                     <SelectItem value="completed">完了</SelectItem>
+                    <SelectItem value="cancelled">キャンセル</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -180,7 +180,7 @@ export default function NewCampaignPage() {
 
             <div className="space-y-2">
               <Label htmlFor="description">説明</Label>
-              <Textarea id="description" name="description" placeholder="キャンペーンの説明を入力" rows={4} />
+              <Textarea id="description" name="description" placeholder="プロジェクトの説明を入力" rows={4} />
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">
@@ -188,7 +188,7 @@ export default function NewCampaignPage() {
               キャンセル
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "作成中..." : "キャンペーンを作成"}
+              {isSubmitting ? "作成中..." : "プロジェクトを作成"}
             </Button>
           </CardFooter>
         </Card>

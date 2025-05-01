@@ -178,6 +178,7 @@ export default function EditCampaignPage({ params }: { params: { id: string } })
         // ここではモックデータを使用
         setTimeout(() => {
           const data = campaignsData[campaignId as keyof typeof campaignsData]
+          // データが見つからない場合のエラーハンドリングを改善
           if (data) {
             // 日付文字列をDate型に変換
             const formattedData = {
@@ -186,16 +187,20 @@ export default function EditCampaignPage({ params }: { params: { id: string } })
               end_date: data.end_date ? new Date(data.end_date) : undefined,
             }
             setCampaignData(formattedData)
+            setFields(campaignFields)
+            setIsLoading(false)
           } else {
+            // エラーメッセージを表示して一覧ページにリダイレクト
             toast({
               title: "エラー",
               description: "キャンペーン情報が見つかりませんでした",
               variant: "destructive",
             })
-            router.push("/campaigns")
+            // 少し遅延させてからリダイレクト
+            setTimeout(() => {
+              router.push("/campaigns")
+            }, 1500)
           }
-          setFields(campaignFields)
-          setIsLoading(false)
         }, 500)
       } catch (error) {
         console.error("データ取得エラー:", error)
