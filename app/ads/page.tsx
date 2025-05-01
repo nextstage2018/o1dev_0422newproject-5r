@@ -172,7 +172,7 @@ export default function AdsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">広告一覧</h1>
-        <Link href="/ads/new">
+        <Link href="/ads/new-ad">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
             新規広告

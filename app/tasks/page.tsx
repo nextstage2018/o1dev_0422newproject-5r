@@ -183,7 +183,7 @@ export default function TasksPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">タスク一覧</h1>
-        <Link href="/tasks/new">
+        <Link href="/tasks/new-task">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
             新規タスク

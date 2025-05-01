@@ -152,7 +152,7 @@ export default function ClientsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">クライアント一覧</h1>
-        <Link href="/clients/new" passHref>
+        <Link href="/clients/new-client" passHref>
           <Button>
             <Plus className="mr-2 h-4 w-4" />
             新規クライアント
