@@ -79,7 +79,7 @@ export function FieldManagementTable({ fields: initialFields, tableName }: Field
 
   const handleAddField = () => {
     // IDを生成（実際の実装ではバックエンドで生成）
-    const id = `${tableName.split("_")[1]}_${Date.now()}`
+    const id = `${tableName.split("_")[0]}_${Date.now()}`
 
     const newFieldWithId: Field = {
       id,
