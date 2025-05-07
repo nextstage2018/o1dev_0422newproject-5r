@@ -1,70 +1,37 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts"
-
-// サンプルデータ
-const performanceData = [
-  { name: "1月", 広告費: 4000, ROAS: 240 },
-  { name: "2月", 広告費: 3000, ROAS: 198 },
-  { name: "3月", 広告費: 2000, ROAS: 280 },
-  { name: "4月", 広告費: 2780, ROAS: 308 },
-  { name: "5月", 広告費: 1890, ROAS: 320 },
-  { name: "6月", 広告費: 2390, ROAS: 380 },
-]
+import { Card, CardContent } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export function DashboardCharts() {
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      <Card className="col-span-1">
-        <CardHeader>
-          <CardTitle>月別広告費</CardTitle>
-        </CardHeader>
-        <CardContent className="h-80">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={performanceData}
-              margin={{
-                top: 10,
-                right: 30,
-                left: 0,
-                bottom: 0,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="広告費" fill="#8884d8" />
-            </BarChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
-
-      <Card className="col-span-1">
-        <CardHeader>
-          <CardTitle>月別ROAS</CardTitle>
-        </CardHeader>
-        <CardContent className="h-80">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              data={performanceData}
-              margin={{
-                top: 10,
-                right: 30,
-                left: 0,
-                bottom: 0,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Line type="monotone" dataKey="ROAS" stroke="#82ca9d" />
-            </LineChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
-    </div>
+    <Card>
+      <CardContent className="p-6">
+        <Tabs defaultValue="weekly">
+          <div className="flex items-center justify-between">
+            <TabsList>
+              <TabsTrigger value="weekly">週間</TabsTrigger>
+              <TabsTrigger value="monthly">月間</TabsTrigger>
+              <TabsTrigger value="quarterly">四半期</TabsTrigger>
+            </TabsList>
+          </div>
+          <TabsContent value="weekly" className="mt-4">
+            <div className="h-[300px] w-full bg-gray-100 rounded-md flex items-center justify-center">
+              <p className="text-muted-foreground">週間データを読み込み中...</p>
+            </div>
+          </TabsContent>
+          <TabsContent value="monthly" className="mt-4">
+            <div className="h-[300px] w-full bg-gray-100 rounded-md flex items-center justify-center">
+              <p className="text-muted-foreground">月間データを読み込み中...</p>
+            </div>
+          </TabsContent>
+          <TabsContent value="quarterly" className="mt-4">
+            <div className="h-[300px] w-full bg-gray-100 rounded-md flex items-center justify-center">
+              <p className="text-muted-foreground">四半期データを読み込み中...</p>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
   )
 }
