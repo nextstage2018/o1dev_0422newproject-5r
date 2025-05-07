@@ -17,6 +17,7 @@ import {
   Target,
   CheckSquare,
   Building2,
+  Database,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -181,6 +182,16 @@ export default function Sidebar({ className }: React.HTMLAttributes<HTMLDivEleme
               <Link href="/settings">
                 <Settings className="mr-2 h-4 w-4" />
                 設定
+              </Link>
+            </Button>
+            <Button
+              variant={pathname === "/master-data" || pathname?.startsWith("/master-data/") ? "secondary" : "ghost"}
+              className="w-full justify-start"
+              asChild
+            >
+              <Link href="/master-data">
+                <Database className="mr-2 h-4 w-4" />
+                マスタデータ
               </Link>
             </Button>
           </div>

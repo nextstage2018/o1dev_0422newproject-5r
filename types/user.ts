@@ -1,5 +1,6 @@
-export type UserRole = "admin" | "project_manager" | "ad_operator" | "sales_rep" | "client"
 export type UserType = "internal" | "external" | "client"
+
+export type UserRole = "admin" | "project_manager" | "ad_operator" | "sales_rep" | "client"
 
 export interface UserPermission {
   accountId: string

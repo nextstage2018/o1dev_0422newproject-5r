@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Bell, Search, User } from "lucide-react"
 
@@ -48,10 +47,7 @@ export default function Header() {
   return (
     <header className="border-b bg-white">
       <div className="flex h-16 items-center px-4">
-        <div className="flex items-center gap-4">
-          <Link href="/" className="flex items-center">
-            <span className="text-xl font-bold">広告管理システム</span>
-          </Link>
+        <div className="flex items-center">
           <span className="text-lg font-medium">{getPageTitle()}</span>
         </div>
         <div className="ml-auto flex items-center gap-4">
@@ -79,12 +75,16 @@ export default function Header() {
           </DropdownMenu>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline">アカウント選択</Button>
+              <Button variant="outline">プロジェクト選択</Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>アカウント1</DropdownMenuItem>
-              <DropdownMenuItem>アカウント2</DropdownMenuItem>
-              <DropdownMenuItem>アカウント3</DropdownMenuItem>
+              <DropdownMenuItem>夏季キャンペーン - Meta広告アカウント (pr00001)</DropdownMenuItem>
+              <DropdownMenuItem>年末プロモーション - Google広告アカウント (pr00002)</DropdownMenuItem>
+              <DropdownMenuItem>ブランディング - Meta広告アカウント (pr00003)</DropdownMenuItem>
+              <DropdownMenuItem>顧客獲得 - Twitter広告アカウント (pr00004)</DropdownMenuItem>
+              <DropdownMenuItem>認知拡大 - TikTok広告アカウント (pr00005)</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>すべてのプロジェクト</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

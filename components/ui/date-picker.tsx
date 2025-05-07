@@ -1,34 +1,37 @@
 "use client"
+
+import type * as React from "react"
 import { format } from "date-fns"
-import { ja } from "date-fns/locale"
-import { CalendarIcon } from "lucide-react"
+import { Calendar as CalendarPrimitive } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
+import { CalendarIcon } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
-interface DatePickerProps {
-  id?: string
-  value?: Date
-  onChange?: (date: Date | undefined) => void
-}
-
-export function DatePicker({ id, value, onChange }: DatePickerProps) {
+export function DatePicker({
+  className,
+  value,
+  onChange,
+  ...props
+}: React.PropsWithChildren<React.ComponentPropsWithoutKeyof<typeof CalendarPrimitive, "mode" | "captionLayout">>) {
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          id={id}
           variant={"outline"}
-          className={cn("w-full justify-start text-left font-normal", !value && "text-muted-foreground")}
+          className={cn(
+            "w-[280px] justify-start text-left font-normal",
+            !(value instanceof Date) && "text-muted-foreground",
+            className,
+          )}
         >
-          <CalendarIcon className="mr-2 h-4 w-4" />
-          {value ? format(value, "yyyy年MM月dd日", { locale: ja }) : "日付を選択"}
+          {value ? format(value, "yyyy-MM-dd") : <span>Pick a date</span>}
+          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
-        <Calendar mode="single" selected={value} onSelect={onChange} initialFocus locale={ja} />
+      <PopoverContent className="w-auto p-0" align="end">
+        <CalendarPrimitive mode="single" selected={value} onSelect={onChange} disabled={props.disabled} initialFocus />
       </PopoverContent>
     </Popover>
   )
